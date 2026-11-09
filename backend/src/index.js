@@ -100,6 +100,27 @@ async function imageBytes(result) {
   throw new Error("AI provider returned an unsupported image response");
 }
 
+function detectImageMime(bytes) {
+  if (bytes.length >= 8 &&
+      bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e &&
+      bytes[3] === 0x47 && bytes[4] === 0x0d && bytes[5] === 0x0a &&
+      bytes[6] === 0x1a && bytes[7] === 0x0a) return "image/png";
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return "image/jpeg";
+  }
+  throw new Error("AI provider returned an unrecognized image format");
+}
+
+function decodeSupportedImage(value) {
+  const bytes = decodeBase64(value);
+  if (!bytes || bytes.length === 0) return null;
+  try {
+    return { bytes, mimeType: detectImageMime(bytes) };
+  } catch {
+    return null;
+  }
+}
+
 function stylePrompt(prompt, style) {
   const styles = [
     "photorealistic, highly detailed",
@@ -136,14 +157,13 @@ async function generate(env, prompt, style) {
 }
 
 async function edit(env, prompt, base64Image) {
-  const image = decodeBase64(base64Image);
-  if (!image || image.length === 0) {
-    throw new TypeError("INVALID_IMAGE");
-  }
+  const decoded = decodeSupportedImage(base64Image);
+  if (!decoded) throw new TypeError("INVALID_IMAGE");
 
+  const extension = decoded.mimeType === "image/png" ? "png" : "jpg";
   const form = new FormData();
   form.append("prompt", prompt);
-  form.append("input_image_0", new Blob([image], { type: "image/jpeg" }), "input.jpg");
+  form.append("input_image_0", new Blob([decoded.bytes], { type: decoded.mimeType }), "input." + extension);
   const serialized = new Response(form);
   const contentType = serialized.headers.get("content-type");
   if (!contentType || !serialized.body) throw new Error("Could not create AI image payload");
@@ -212,7 +232,7 @@ export default {
 
       if (url.pathname === "/edit") {
         if (typeof body.image !== "string" || body.image.length === 0 ||
-            body.image.length > MAX_IMAGE_BASE64_LENGTH || !decodeBase64(body.image)) {
+            body.image.length > MAX_IMAGE_BASE64_LENGTH || !decodeSupportedImage(body.image)) {
           return json({ error: "A valid JPEG or PNG image is required" }, 400);
         }
       }
@@ -225,7 +245,8 @@ export default {
           ? await generate(env, prompt, body.style)
           : await edit(env, prompt, body.image);
         const bytes = await imageBytes(result);
-        return json({ image: toBase64(bytes), mimeType: "image/jpeg" });
+        const mimeType = detectImageMime(bytes);
+        return json({ image: toBase64(bytes), mimeType });
       } catch (error) {
         await refund(env, device);
         console.error("Workers AI inference failed:", error);
