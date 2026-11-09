@@ -10,6 +10,11 @@ on:
       - "gradle.properties"
       - ".github/workflows/build.yml"
   workflow_dispatch:
+    inputs:
+      backend_url:
+        description: "Deployed HTTPS Cloudflare Worker URL (normally supplied by the deploy workflow)"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -54,7 +59,7 @@ jobs:
           gradle-version: "8.13"
       - name: Validate deployed backend URL
         env:
-          BACKEND_URL: ${{ vars.BACKEND_URL }}
+          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
         run: |
           set -euo pipefail
           if [ -z "$BACKEND_URL" ] || ! [[ "$BACKEND_URL" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
@@ -63,7 +68,7 @@ jobs:
           fi
 
       - name: Build debug APK
-        run: gradle --no-daemon clean testDebugUnitTest assembleDebug -PbackendUrl="${{ vars.BACKEND_URL }}"
+        run: gradle --no-daemon clean testDebugUnitTest assembleDebug -PbackendUrl="$BACKEND_URL"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
