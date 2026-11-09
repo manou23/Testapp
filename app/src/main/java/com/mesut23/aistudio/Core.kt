@@ -98,6 +98,13 @@ class ProxyProvider(baseUrl: String, private val deviceId: String) : AiProvider 
 
 fun mimeOf(file: File): String = if (file.extension.equals("png", true)) "image/png" else "image/jpeg"
 
+private fun imageExtension(bytes: ByteArray): String =
+    if (bytes.size >= 8 &&
+        bytes[0] == 0x89.toByte() &&
+        bytes[1] == 0x50.toByte() &&
+        bytes[2] == 0x4E.toByte() &&
+        bytes[3] == 0x47.toByte()) "png" else "jpg"
+
 val RATIOS = listOf("1:1" to 1f, "9:16" to (9f / 16f), "16:9" to (16f / 9f), "4:3" to (4f / 3f))
 
 class AppVM(app: Application) : AndroidViewModel(app) {
@@ -149,13 +156,13 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     fun clear() { result = null; results = emptyList(); error = 0 }
 
     fun generate(prompt: String, selectedStyle: Int, ratio: Float, count: Int = 1) {
-        if (!busy && prompt.isNotBlank()) runImageJob(ratio, count = count.coerceIn(1, 4)) {
+        if (!busy && prompt.isNotBlank()) runImageJob(ratio, ext = "auto", count = count.coerceIn(1, 4)) {
             provider.generate(prompt, selectedStyle)
         }
     }
 
     fun edit(uri: Uri, instruction: String) {
-        if (!busy && instruction.isNotBlank()) runImageJob { provider.edit(loadJpeg(uri), instruction) }
+        if (!busy && instruction.isNotBlank()) runImageJob(ext = "auto") { provider.edit(loadJpeg(uri), instruction) }
     }
 
     fun reward() {
@@ -182,8 +189,10 @@ class AppVM(app: Application) : AndroidViewModel(app) {
                     val bytes = operation()
                     if (bytes.isEmpty()) throw IOException("Empty image")
                     val file = withContext(Dispatchers.IO) {
-                        val output = File(creationsDir, "mesut_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().take(6) + "." + ext)
-                        output.writeBytes(if (ratio == null) bytes else cropToRatio(bytes, ratio))
+                        val finalBytes = if (ratio == null) bytes else cropToRatio(bytes, ratio)
+                        val outputExt = if (ext == "auto") imageExtension(finalBytes) else ext
+                        val output = File(creationsDir, "mesut_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().take(6) + "." + outputExt)
+                        output.writeBytes(finalBytes)
                         output
                     }
                     result = file
@@ -294,7 +303,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun loadJpeg(uri: Uri): ByteArray = withContext(Dispatchers.IO) {
-        val bitmap = loadBitmap(uri, 1600)
+        val bitmap = loadBitmap(uri, 512)
         ByteArrayOutputStream().use { output ->
             try {
                 if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)) throw IOException("Cannot encode selected image")
