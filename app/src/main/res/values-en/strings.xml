@@ -11,4 +11,13 @@
     <string name="premium_b1">A more flexible creative experience</string><string name="premium_b2">A tidy space for your work</string><string name="premium_b3">Additional features when available</string><string name="premium_cta">Coming soon</string><string name="premium_note">Purchases and subscriptions are not enabled in this release.</string><string name="premium_debug">Developer test mode</string>
     <string name="about_title">About</string><string name="about_desc">A creative studio for AI-assisted image generation and editing.</string><string name="about_text">Version %1$s</string><string name="language">Language</string><string name="delete_all">Delete all saved images</string><string name="reward_max">Reward credits are currently unavailable.</string>
     <string-array name="style_names"><item>Photorealistic</item><item>Cinematic</item><item>Anime</item><item>3D</item><item>Digital art</item><item>Watercolor</item><item>Oil painting</item><item>Fantasy</item></string-array>
+    <string name="variations">Number of images (one credit each)</string>
+    <string name="quota_partial">Credits ran out during generation. Completed images have been kept.</string>
+    <string name="tool_remove_bg">Remove background</string>
+    <string name="tool_upscale">Enlarge ×2</string>
+    <string name="local_note">These tools run on your device: no upload and no credits used. ×2 is standard resizing, not AI upscaling. Background removal requires Google Play services and the model to be downloaded first.</string>
+    <string name="local_tools_title">On-device tools</string>
+    <string name="download_segmentation_model">Download background model now</string>
+    <string name="model_ready">Background removal model is ready on this device.</string>
+    <string name="model_download_pending">Could not download the model. Check internet and Google Play services, then retry.</string>
 </resources>
