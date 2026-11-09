@@ -100,7 +100,7 @@ The backend uses the Workers AI binding, a KV namespace, and two approximate Rat
 ### One-time Cloudflare setup
 
 1. In Cloudflare Dashboard → Workers & Pages → KV, create a namespace named `MESUT_AI_LIMITS` and copy its 32-character namespace ID.
-2. Create a Cloudflare API token restricted to this account with **Workers Scripts: Edit**, **Workers KV Storage: Edit**, **Account Settings: Read**, and **AI: Read** permissions. Never paste this token into source code or chat.
+2. Create an account-scoped Cloudflare API token for CI. Because this workflow may create the Worker on its first deployment, grant **Workers Admin** at the Workers product scope; after the Worker exists, rotate to a token scoped to **Workers Editor** for that Worker. Add **Account Settings: Read** if Wrangler requests account metadata access. KV is created manually, so do not grant KV write unless you also want the pipeline to manage KV resources. Never paste this token into source code or chat.
 3. In GitHub → Settings → Secrets and variables → Actions → Secrets, add:
    - `CLOUDFLARE_API_TOKEN`
    - `CLOUDFLARE_ACCOUNT_ID`
@@ -116,7 +116,7 @@ Required bindings:
 - `AI`: Cloudflare Workers AI.
 - `LIMITS`: KV namespace for daily counters.
 - `DEVICE_RATE_LIMITER`: 12 requests per 60 seconds per installation ID.
-- `IP_RATE_LIMITER`: 60 requests per 60 seconds per source IP.
+- `IP_RATE_LIMITER`: 60 requests per 60 seconds per source IP. The configured namespace IDs `1001` and `1002` must be unique within your Cloudflare account; change them if another Worker already uses either ID. Cloudflare rate limiting is approximate and location-local, not a strict global quota.
 
 The Worker exposes:
 - `GET /credits`
