@@ -54,16 +54,10 @@ jobs:
           fi
           echo "worker_url=$WORKER_URL" >> "$GITHUB_OUTPUT"
 
-      - name: Save backend URL for Android builds
+      - name: Trigger Android build with the deployed backend
         env:
           GH_TOKEN: ${{ github.token }}
           WORKER_URL: ${{ steps.deploy.outputs.worker_url }}
         run: |
           set -euo pipefail
-          gh variable set BACKEND_URL --body "$WORKER_URL" --repo "$GITHUB_REPOSITORY"
-          echo "Saved BACKEND_URL=$WORKER_URL"
-
-      - name: Trigger Android build with the deployed backend
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run build.yml --ref main --repo "$GITHUB_REPOSITORY"
+          gh workflow run build.yml --ref main --field backend_url="$WORKER_URL" --repo "$GITHUB_REPOSITORY"
