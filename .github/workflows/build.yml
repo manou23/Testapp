@@ -57,6 +57,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.13"
+      - name: Run Android unit tests
+        run: gradle --no-daemon testDebugUnitTest
+
       - name: Validate deployed backend URL
         env:
           BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
@@ -70,7 +73,7 @@ jobs:
       - name: Build debug APK
         env:
           BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
-        run: gradle --no-daemon clean testDebugUnitTest assembleDebug -PbackendUrl="$BACKEND_URL"
+        run: gradle --no-daemon assembleDebug -PbackendUrl="$BACKEND_URL"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
