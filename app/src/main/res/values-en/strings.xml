@@ -24,4 +24,5 @@
     <string name="home_workspace">Your creative workspace</string>
     <string name="aspect_ratio">Aspect ratio</string>
     <string name="style_label">Style</string>
+    <string name="error_rate_limited">Too many requests. Wait a moment and try again.</string>
 </resources>
