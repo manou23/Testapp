@@ -68,6 +68,8 @@ jobs:
           fi
 
       - name: Build debug APK
+        env:
+          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
         run: gradle --no-daemon clean testDebugUnitTest assembleDebug -PbackendUrl="$BACKEND_URL"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
