@@ -133,7 +133,7 @@ Configure these GitHub repository secrets for the signed Release workflow:
 
 Also configure the `BACKEND_URL` repository variable. Keep the original keystore backed up securely; losing it prevents compatible updates. Never commit the keystore or paste passwords into chat.
 
-The application ID remains `com.mesut23.aistudio`. Increase `versionCode` for every release and sign all production updates with the same permanent key.
+The application ID remains `com.mesut23.aistudio`. Increase `versionCode` for every release and sign all production updates with the same permanent key. The Release workflow builds both a signed APK and a signed AAB; use the AAB for a new Google Play listing because Play requires Android App Bundles for new apps.
 
 ## 📢 Ads, Premium and privacy
 
