@@ -13,7 +13,7 @@ function makeEnv({ limit = 3, aiRun } = {}) {
     },
     DEVICE_RATE_LIMITER: limiter,
     IP_RATE_LIMITER: limiter,
-    AI: { run: aiRun ?? (async () => ({ image: "aGVsbG8=" })) },
+    AI: { run: aiRun ?? (async () => ({ image: "iVBORw0KGgo=" })) },
     store
   };
 }
@@ -48,14 +48,14 @@ test("generation decodes Cloudflare's base64 image response", async () => {
     aiRun: async (model, input) => {
       calledModel = model;
       assert.match(input.prompt, /photorealistic/);
-      return { image: "aGVsbG8=" };
+      return { image: "iVBORw0KGgo=" };
     }
   });
   const response = await worker.fetch(request("/generate", { prompt: "A blue bird", style: 0 }), env);
   assert.equal(response.status, 200);
   const result = await response.json();
-  assert.equal(result.mimeType, "image/jpeg");
-  assert.equal(atob(result.image), "hello");
+  assert.equal(result.mimeType, "image/png");
+  assert.equal(atob(result.image), atob("iVBORw0KGgo="));
   assert.equal(calledModel, "@cf/black-forest-labs/flux-1-schnell");
 });
 
@@ -66,14 +66,15 @@ test("edit uses the supported FLUX.2 klein multipart input contract", async () =
     aiRun: async (model, input) => {
       calledModel = model;
       multipart = Boolean(input.multipart?.body && input.multipart?.contentType?.includes("multipart/form-data"));
-      return { image: "aGVsbG8=" };
+      return { image: "iVBORw0KGgo=" };
     }
   });
   const response = await worker.fetch(request("/edit", {
     prompt: "Turn this into watercolor",
-    image: "aGVsbG8="
+    image: "/9j/AA=="
   }), env);
   assert.equal(response.status, 200);
+  assert.equal((await response.clone().json()).mimeType, "image/png");
   assert.equal(calledModel, "@cf/black-forest-labs/flux-2-klein-4b");
   assert.equal(multipart, true);
 });
@@ -93,7 +94,7 @@ test("daily credit limit blocks inference", async () => {
   let calls = 0;
   const env = makeEnv({
     limit: 1,
-    aiRun: async () => { calls++; return { image: "aGVsbG8=" }; }
+    aiRun: async () => { calls++; return { image: "iVBORw0KGgo=" }; }
   });
   assert.equal((await worker.fetch(request("/generate", { prompt: "first" }), env)).status, 200);
   assert.equal((await worker.fetch(request("/generate", { prompt: "second" }), env)).status, 429);
