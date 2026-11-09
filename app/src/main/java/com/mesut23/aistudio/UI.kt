@@ -429,7 +429,7 @@ fun PremiumScreen(vm: AppVM, onBack: () -> Unit) {
             Text(stringResource(R.string.premium_note), style = MaterialTheme.typography.bodySmall)
             if (BuildConfig.DEBUG) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Switch(checked = vm.premium, onCheckedChange = vm::setPremium)
+                    Switch(checked = vm.premium, onCheckedChange = vm::savePremium)
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.premium_debug), style = MaterialTheme.typography.bodySmall)
                 }
