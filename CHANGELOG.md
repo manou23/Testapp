@@ -20,6 +20,8 @@
 - تحديث GitHub Actions لتشغيل اختبارات Worker قبل بناء APK.
 
 ### Android وتجربة الاستخدام
+- ترقية Android Gradle Plugin وKotlin وGradle إلى إصدارات متوافقة مع API 36.
+- رفع compileSdk وtargetSdk إلى Android 16 (API 36) لتلبية شرط Google Play اعتباراً من 31 أغسطس 2026، مع الحفاظ على minSdk 26.
 - رفع الحد الأدنى إلى Android 8.0 (API 26) وفق متطلبات المنتج.
 - رفع الإصدار إلى 1.0.2 وversionCode إلى 3.
 - إضافة شاشة Splash فعلية عند بدء التشغيل.
