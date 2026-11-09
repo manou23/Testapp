@@ -20,4 +20,8 @@
     <string name="download_segmentation_model">Download background model now</string>
     <string name="model_ready">Background removal model is ready on this device.</string>
     <string name="model_download_pending">Could not download the model. Check internet and Google Play services, then retry.</string>
+    <string name="home_tagline">Create • Imagine • Transform</string>
+    <string name="home_workspace">Your creative workspace</string>
+    <string name="aspect_ratio">Aspect ratio</string>
+    <string name="style_label">Style</string>
 </resources>
