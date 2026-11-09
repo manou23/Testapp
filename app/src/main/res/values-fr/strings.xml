@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mesut AI Studio</string>
+    <string name="tab_home">Accueil</string><string name="tab_generate">Créer</string><string name="tab_edit">Modifier</string><string name="tab_creations">Créations</string><string name="tab_settings">Paramètres</string>
+    <string name="credits_today">Crédits disponibles</string><string name="favorites_title">Favoris</string><string name="premium_title">Premium</string>
+    <string name="error_network">Connexion au serveur impossible. Vérifiez Internet et la configuration du serveur.</string>
+    <string name="prompt_hint">Décrivez l’image à créer</string><string name="generate">Créer l’image</string><string name="pick_photo">Choisir une photo</string><string name="edit_hint">Décrivez les modifications souhaitées</string><string name="apply">Appliquer</string>
+    <string name="consent_title">Confirmer le traitement</string><string name="consent_body">Votre image et vos instructions seront envoyées au serveur IA pour traitement.</string><string name="continue_">Continuer</string><string name="cancel">Annuler</string>
+    <string name="quota_reached">Vous avez utilisé vos crédits disponibles.</string><string name="error_generic">Une erreur est survenue.</string><string name="saved">Image enregistrée dans la galerie.</string><string name="save">Enregistrer</string><string name="share">Partager</string><string name="favorites_empty">Aucune image pour le moment.</string>
+    <string name="premium_b1">Une expérience créative plus flexible</string><string name="premium_b2">Un espace organisé pour vos créations</string><string name="premium_b3">Fonctions supplémentaires à venir</string><string name="premium_cta">Bientôt disponible</string><string name="premium_note">Les achats et abonnements ne sont pas activés dans cette version.</string><string name="premium_debug">Mode test développeur</string>
+    <string name="about_title">À propos</string><string name="about_desc">Un studio créatif pour générer et modifier des images avec l’IA.</string><string name="about_text">Version %1$s</string><string name="language">Langue</string><string name="delete_all">Supprimer toutes les images</string><string name="reward_max">Les crédits bonus sont indisponibles.</string>
+    <string-array name="style_names"><item>Réaliste</item><item>Cinématique</item><item>Anime</item><item>3D</item><item>Art numérique</item><item>Aquarelle</item><item>Peinture à l’huile</item><item>Fantaisie</item></string-array>
+</resources>
