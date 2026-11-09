@@ -15,20 +15,34 @@
 
 ---
 
-## 📥 Download APK
+## 📥 Download Mesut AI Studio
 
-**Source version: 1.0.4**
+<div align="center">
 
-> **Backend deployment is still required before AI generation/editing will work.** The latest CI build now checks for a real HTTPS `BACKEND_URL` and stops instead of producing an APK that silently cannot connect. Run the Cloudflare deployment workflow described below, then download the new APK build it triggers.
+### النسخة الأحدث للأندرويد
 
-1. Open [GitHub Actions](https://github.com/manou23/Testapp/actions).
-2. Open the latest successful **Build Android APK** workflow run.
-3. Download the artifact named **Mesut-AI-Studio-1.0.4-debug**.
-4. Extract the ZIP and install the APK.
+<a href="https://github.com/manou23/Testapp/releases/download/latest-apk/Mesut-AI-Studio.apk">
+  <img src="https://img.shields.io/badge/⬇%20تحميل%20مباشر-APK-7C3AED?style=for-the-badge&logo=android&logoColor=white" alt="Download Mesut AI Studio APK">
+</a>
 
-Backend changes on `main` automatically deploy the Cloudflare Worker and then trigger an Android build using its detected URL. Other builds use the known deployed Worker URL as a fallback; a repository Actions variable named `BACKEND_URL` can override it.
+**الإصدار الحالي: 1.0.4** · Android 8.0 أو أحدث
 
-The workflow builds a **debug APK** for testing. It is not a production-signed APK and may not update an APK signed with a different key. A permanent signed release requires the owner's private keystore.
+[تحميل مباشر APK](https://github.com/manou23/Testapp/releases/download/latest-apk/Mesut-AI-Studio.apk) · [عرض جميع الإصدارات](https://github.com/manou23/Testapp/releases)
+
+</div>
+
+### طريقة التثبيت
+
+1. اضغط زر **تحميل مباشر APK** أعلاه.
+2. انتظر اكتمال تنزيل الملف على هاتف Android.
+3. افتح الملف الذي تم تنزيله، واسمح بالتثبيت من هذا المصدر إذا طلب Android ذلك.
+4. اضغط **تثبيت** ثم افتح التطبيق.
+
+### تحديثات التطبيق
+
+كلما ينجح بناء نسخة جديدة على GitHub Actions، يُحدَّث رابط التحميل المباشر نفسه تلقائياً ليشير إلى أحدث APK. يمكنك أيضاً متابعة [حالة البناء](https://github.com/manou23/Testapp/actions).
+
+> **ملاحظة مهمة:** الملف الحالي APK تجريبي موقّع بمفتاح Debug. إذا كان لديك إصدار سابق موقّع بمفتاح مختلف، فقد يطلب Android إزالة الإصدار القديم قبل تثبيت الجديد. لا تحذف إصدارك الحالي إذا كنت تريد الاحتفاظ ببياناته قبل التأكد من النسخ الاحتياطي. إصدار الإنتاج الموقّع بمفتاح دائم يحتاج إعداد مفتاح التوقيع الخاص بالمشروع.
 
 ## 🌟 Features in 1.0.4
 
