@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.mesut23.aistudio"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mesut23.aistudio"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 3
         versionName = "1.0.2"
         val backend = providers.gradleProperty("backendUrl").orElse("https://CHANGE-ME.workers.dev").get()
