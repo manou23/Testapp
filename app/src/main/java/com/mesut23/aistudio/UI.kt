@@ -47,6 +47,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import java.io.File
+import kotlinx.coroutines.delay
 
 private const val TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111"
 private val BRAND_GRADIENT = Brush.linearGradient(listOf(Color(0xFF9B6DFF), Color(0xFF3978F6)))
@@ -69,7 +70,16 @@ fun MesutTheme(content: @Composable () -> Unit) {
 fun Root(act: Activity, vm: AppVM = viewModel()) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var subScreen by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(Unit) { vm.refresh() }
+    var showSplash by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        delay(850)
+        showSplash = false
+        vm.refresh()
+    }
+    if (showSplash) {
+        Splash()
+        return
+    }
     BackHandler(enabled = subScreen != null) { subScreen = null }
 
     val tabs = listOf(
@@ -444,13 +454,6 @@ fun PremiumScreen(vm: AppVM, onBack: () -> Unit) {
                 Text(stringResource(R.string.premium_cta))
             }
             Text(stringResource(R.string.premium_note), style = MaterialTheme.typography.bodySmall)
-            if (BuildConfig.DEBUG) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Switch(checked = vm.premium, onCheckedChange = vm::savePremium)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.premium_debug), style = MaterialTheme.typography.bodySmall)
-                }
-            }
         }
     }
 }
