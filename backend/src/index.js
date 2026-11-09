@@ -5,6 +5,7 @@ const JSON_HEADERS = {
 
 const GENERATION_MODEL = "@cf/black-forest-labs/flux-1-schnell";
 const EDIT_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
+const TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 const MAX_PROMPT_LENGTH = 2000;
 const MAX_IMAGE_BASE64_LENGTH = 5_600_000;
 const MAX_REQUEST_LENGTH = 6_000_000;
@@ -149,9 +150,34 @@ async function readJson(request) {
   }
 }
 
+function containsArabic(text) {
+  return /[\u0600-\u06FF]/u.test(text);
+}
+
+async function generationPrompt(env, prompt) {
+  if (!containsArabic(prompt)) return prompt;
+  try {
+    const translated = await env.AI.run(TRANSLATION_MODEL, {
+      text: prompt,
+      source_lang: "ar",
+      target_lang: "en"
+    });
+    const english = typeof translated?.translated_text === "string"
+      ? translated.translated_text.trim()
+      : "";
+    return english || prompt;
+  } catch (error) {
+    // Translation is an enhancement, not a hard dependency. Preserve the user's
+    // original prompt if the translation model is temporarily unavailable.
+    console.warn("Arabic prompt translation failed; using the original prompt", error);
+    return prompt;
+  }
+}
+
 async function generate(env, prompt, style) {
+  const preparedPrompt = await generationPrompt(env, prompt);
   return env.AI.run(GENERATION_MODEL, {
-    prompt: stylePrompt(prompt, style),
+    prompt: stylePrompt(preparedPrompt, style),
     steps: 4
   });
 }
