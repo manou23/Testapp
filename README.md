@@ -6,7 +6,7 @@
 
 *Create beyond imagination.*
 
-![Version](https://img.shields.io/badge/version-1.0.2-7C3AED?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.3-7C3AED?style=for-the-badge)
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Build](https://img.shields.io/badge/build-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
@@ -17,22 +17,22 @@
 
 ## 📥 Download APK
 
-**Source version: 1.0.2**
+**Source version: 1.0.3**
 
 > **Backend deployment is still required before AI generation/editing will work.** The latest CI build now checks for a real HTTPS `BACKEND_URL` and stops instead of producing an APK that silently cannot connect. Run the Cloudflare deployment workflow described below, then download the new APK build it triggers.
 
 1. Open [GitHub Actions](https://github.com/manou23/Testapp/actions).
 2. Open the latest successful **Build Android APK** workflow run.
-3. Download the artifact named **Mesut-AI-Studio-1.0.2-debug**.
+3. Download the artifact named **Mesut-AI-Studio-1.0.3-debug**.
 4. Extract the ZIP and install the APK.
 
-The deploy workflow passes the newly deployed Worker URL directly to the Android build, so it does not depend on the workflow being able to edit repository variables. For later manual or push-triggered builds, optionally add a repository Actions variable named `BACKEND_URL` with the same HTTPS Worker URL.
+Backend changes on `main` automatically deploy the Cloudflare Worker and then trigger an Android build using its detected URL. Other builds use the known deployed Worker URL as a fallback; a repository Actions variable named `BACKEND_URL` can override it.
 
 The workflow builds a **debug APK** for testing. It is not a production-signed APK and may not update an APK signed with a different key. A permanent signed release requires the owner's private keystore.
 
-## 🌟 Features in 1.0.2
+## 🌟 Features in 1.0.3
 
-- Text-to-image generation through Cloudflare Workers AI FLUX.1 schnell.
+- Text-to-image generation through Cloudflare Workers AI FLUX.2 klein 4B, with automatic Arabic-to-English prompt translation.
 - Prompt-guided image editing through FLUX.2 klein 4B with a reference image.
 - 1–4 sequential image variations, with completed images retained if later credits run out.
 - Local subject cut-out using ML Kit, saved as transparent PNG.
