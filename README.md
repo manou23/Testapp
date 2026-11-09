@@ -6,7 +6,7 @@
 
 *Create beyond imagination.*
 
-![Version](https://img.shields.io/badge/version-1.0.0-7C3AED?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.1-7C3AED?style=for-the-badge)
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.20-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Build](https://img.shields.io/badge/build-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
@@ -17,7 +17,9 @@
 
 ## 📥 Download
 
-**Current source version: 1.0.0**
+**Current source version: 1.0.1**
+
+Version 1.0.1 is the first patch update. It fixes a Kotlin compilation issue and retains the newer app/backend implementation after reviewing the supplied project archive.
 
 The APK is not published yet. A debug APK is generated as a GitHub Actions artifact after a successful build. A public download link will be added to [Releases](https://github.com/manou23/Testapp/releases) only after the app has been built, configured and tested.
 
@@ -70,7 +72,7 @@ The repository uses GitHub Actions:
 1. Open the [Actions page](https://github.com/manou23/Testapp/actions).
 2. Select **Build Android APK**.
 3. Open the latest successful run.
-4. Download the artifact named **Mesut-AI-Studio-1.0.0-debug**.
+4. Download the artifact named **Mesut-AI-Studio-1.0.1-debug**.
 
 For local builds, use JDK 17 and Gradle 8.9:
 
@@ -115,7 +117,7 @@ Release sequence:
 
 | Release | Version | versionCode |
 |---|---:|---:|
-| First release | 1.0.0 | 1 |
+| First release | 1.0.1 | 1 |
 | First patch | 1.0.1 | 2 |
 | Next patch | 1.0.2 | 3 |
 
