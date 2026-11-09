@@ -33,6 +33,7 @@ import java.net.URL
 import java.util.UUID
 
 class QuotaException : Exception()
+class RateLimitException : Exception()
 
 interface AiProvider {
     suspend fun credits(): Int
@@ -63,7 +64,10 @@ class ProxyProvider(baseUrl: String, private val deviceId: String) : AiProvider 
                 val status = connection.responseCode
                 val stream = if (status in 200..299) connection.inputStream else connection.errorStream
                 val response = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
-                if (status == 429) throw QuotaException()
+                if (status == 429) {
+                    if (response.contains("Too many requests", ignoreCase = true)) throw RateLimitException()
+                    throw QuotaException()
+                }
                 if (status !in 200..299) throw IOException("Server returned HTTP $status")
                 JSONObject(response)
             } finally { connection.disconnect() }
@@ -201,6 +205,8 @@ class AppVM(app: Application) : AndroidViewModel(app) {
                 }
             } catch (cancelled: CancellationException) {
                 throw cancelled
+            } catch (_: RateLimitException) {
+                error = R.string.error_rate_limited
             } catch (_: QuotaException) {
                 error = if (results.isEmpty()) R.string.quota_reached else R.string.quota_partial
             } catch (_: IOException) {
