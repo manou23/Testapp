@@ -253,7 +253,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         updateFavorites(if (file.name in favorites) favorites - file.name else favorites + file.name)
     }
 
-    fun setPremium(value: Boolean) {
+    fun savePremium(value: Boolean) {
         premium = value
         preferences.edit().putBoolean("premium", value).apply()
     }
