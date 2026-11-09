@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="styles_title">مكتبة الأنماط</string>
     <string name="app_name">Mesut AI Studio</string>
     <string name="tab_home">الرئيسية</string>
     <string name="tab_generate">إنشاء</string>
