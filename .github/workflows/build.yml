@@ -16,7 +16,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mesut-ai-studio-build-${{ github.ref }}
@@ -80,6 +80,25 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Prepare direct-download APK
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/direct-download"
+          cp app/build/outputs/apk/debug/*.apk "$RUNNER_TEMP/direct-download/Mesut-AI-Studio.apk"
+
+      - name: Publish latest APK download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-apk
+          name: Mesut AI Studio — Latest APK
+          body: |
+            Automated latest Android debug APK for testing.
+
+            This build is debug-signed. To install a newer build over an existing copy, Android requires the same signing key; otherwise uninstall the previous copy first.
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: ${{ runner.temp }}/direct-download/Mesut-AI-Studio.apk
 
       - name: Check release signing configuration
         id: release_signing
