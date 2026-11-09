@@ -447,13 +447,10 @@ fun PremiumScreen(vm: AppVM, onBack: () -> Unit) {
                 style = MaterialTheme.typography.headlineLarge.copy(brush = BRAND_GRADIENT),
                 fontWeight = FontWeight.Bold
             )
-            listOf(R.string.premium_b1, R.string.premium_b2, R.string.premium_b3).forEach {
-                Text("✓  " + stringResource(it), style = MaterialTheme.typography.bodyLarge)
-            }
             Button(onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.premium_cta))
             }
-            Text(stringResource(R.string.premium_note), style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.premium_note), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
