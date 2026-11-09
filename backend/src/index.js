@@ -122,7 +122,7 @@ async function readJson(request) {
 async function generate(env, prompt, style) {
   return env.AI.run(GENERATION_MODEL, {
     prompt: stylePrompt(prompt, style),
-    num_steps: 4
+    steps: 4
   });
 }
 
