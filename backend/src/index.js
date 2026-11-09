@@ -3,7 +3,7 @@ const JSON_HEADERS = {
   "cache-control": "no-store"
 };
 
-const GENERATION_MODEL = "@cf/black-forest-labs/flux-1-schnell";
+const GENERATION_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
 const EDIT_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
 const TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 const MAX_PROMPT_LENGTH = 2000;
@@ -176,9 +176,19 @@ async function generationPrompt(env, prompt) {
 
 async function generate(env, prompt, style) {
   const preparedPrompt = await generationPrompt(env, prompt);
+  const form = new FormData();
+  form.append("prompt", stylePrompt(preparedPrompt, style));
+  form.append("width", "1024");
+  form.append("height", "1024");
+  form.append("guidance", "4");
+  const serialized = new Response(form);
+  const contentType = serialized.headers.get("content-type");
+  if (!contentType || !serialized.body) throw new Error("Could not create AI generation payload");
   return env.AI.run(GENERATION_MODEL, {
-    prompt: stylePrompt(preparedPrompt, style),
-    steps: 4
+    multipart: {
+      body: serialized.body,
+      contentType
+    }
   });
 }
 
