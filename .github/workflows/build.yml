@@ -12,20 +12,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
-      - name: Set up Java
+
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-      - name: Set up Gradle
+
+      - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
       - name: Build debug APK
-        run: gradle --no-daemon assembleDebug -PbackendUrl="${{ vars.BACKEND_URL }}"
-      - name: Upload APK
+        run: gradle --no-daemon clean assembleDebug -PbackendUrl="${{ vars.BACKEND_URL }}"
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Mesut-AI-Studio-debug-1.0.0
+          name: Mesut-AI-Studio-1.0.0-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 14
