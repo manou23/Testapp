@@ -24,4 +24,5 @@
     <string name="home_workspace">Votre espace créatif</string>
     <string name="aspect_ratio">Format de l’image</string>
     <string name="style_label">Style</string>
+    <string name="error_rate_limited">Trop de requêtes. Attendez un instant puis réessayez.</string>
 </resources>
