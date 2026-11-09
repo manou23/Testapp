@@ -42,12 +42,14 @@ test("credits starts at the configured daily limit", async () => {
   assert.deepEqual(await response.json(), { credits: 4, limit: 4 });
 });
 
-test("generation decodes Cloudflare's base64 image response", async () => {
+test("generation uses FLUX.2 Klein multipart and decodes its base64 image response", async () => {
   let calledModel = "";
+  let multipartBody = "";
   const env = makeEnv({
     aiRun: async (model, input) => {
       calledModel = model;
-      assert.match(input.prompt, /photorealistic/);
+      assert.match(input.multipart.contentType, /multipart\/form-data/);
+      multipartBody = await new Response(input.multipart.body).text();
       return { image: "iVBORw0KGgo=" };
     }
   });
@@ -56,7 +58,9 @@ test("generation decodes Cloudflare's base64 image response", async () => {
   const result = await response.json();
   assert.equal(result.mimeType, "image/png");
   assert.equal(atob(result.image), atob("iVBORw0KGgo="));
-  assert.equal(calledModel, "@cf/black-forest-labs/flux-1-schnell");
+  assert.equal(calledModel, "@cf/black-forest-labs/flux-2-klein-4b");
+  assert.match(multipartBody, /A blue bird/);
+  assert.match(multipartBody, /1024/);
 });
 
 test("Arabic generation prompts are translated to English before FLUX", async () => {
@@ -78,9 +82,10 @@ test("Arabic generation prompts are translated to English before FLUX", async ()
   }), env);
   assert.equal(response.status, 200);
   assert.equal(calls[0].model, "@cf/meta/m2m100-1.2b");
-  assert.equal(calls[1].model, "@cf/black-forest-labs/flux-1-schnell");
-  assert.match(calls[1].input.prompt, /A beach with blue waves/);
-  assert.doesNotMatch(calls[1].input.prompt, /houses|buildings/i);
+  assert.equal(calls[1].model, "@cf/black-forest-labs/flux-2-klein-4b");
+  const generatedForm = await new Response(calls[1].input.multipart.body).text();
+  assert.match(generatedForm, /A beach with blue waves/);
+  assert.doesNotMatch(generatedForm, /houses|buildings/i);
 });
 
 test("generation falls back to the original Arabic prompt if translation fails", async () => {
