@@ -42,4 +42,13 @@
         <item>واقعي</item><item>سينمائي</item><item>أنمي</item><item>ثلاثي الأبعاد</item>
         <item>فن رقمي</item><item>ألوان مائية</item><item>رسم زيتي</item><item>خيالي</item>
     </string-array>
+    <string name="variations">عدد النسخ (كل نسخة تستهلك رصيداً)</string>
+    <string name="quota_partial">انتهى الرصيد أثناء التوليد. تم الاحتفاظ بالنسخ المكتملة.</string>
+    <string name="tool_remove_bg">إزالة الخلفية</string>
+    <string name="tool_upscale">تكبير ×2</string>
+    <string name="local_note">الأدوات المحلية لا ترسل الصورة إلى الخادم ولا تستهلك رصيداً. التكبير ×2 عادي وليس رفع دقة بالذكاء الاصطناعي. تتطلب إزالة الخلفية خدمات Google Play وتنزيل النموذج أولاً.</string>
+    <string name="local_tools_title">أدوات الجهاز</string>
+    <string name="download_segmentation_model">تنزيل نموذج إزالة الخلفية الآن</string>
+    <string name="model_ready">تم تجهيز نموذج إزالة الخلفية على هذا الجهاز.</string>
+    <string name="model_download_pending">تعذر تنزيل النموذج الآن. تحقق من الإنترنت وخدمات Google Play ثم أعد المحاولة.</string>
 </resources>
