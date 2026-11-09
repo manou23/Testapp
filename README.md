@@ -84,8 +84,8 @@ GitHub Actions runs Node.js Worker tests first, then Android JUnit unit tests, a
 
 Local requirements:
 - JDK 17
-- Gradle 8.9
-- Android SDK for API 35
+- Gradle 8.13
+- Android SDK for API 36
 
 ```bash
 gradle --no-daemon clean assembleDebug -PbackendUrl="https://YOUR-WORKER.workers.dev"
