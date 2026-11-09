@@ -135,7 +135,7 @@ private fun Home(vm: AppVM, navigate: (String) -> Unit) {
             style = MaterialTheme.typography.headlineLarge.copy(brush = BRAND_GRADIENT),
             fontWeight = FontWeight.ExtraBold
         )
-        Text("Create • Imagine • Transform", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.home_tagline), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
             Column(Modifier.padding(18.dp)) {
                 Text(stringResource(R.string.credits_today), color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -151,7 +151,7 @@ private fun Home(vm: AppVM, navigate: (String) -> Unit) {
         HomeAction(stringResource(R.string.premium_title), "◇", Modifier.fillMaxWidth()) { navigate("premium") }
         if (vm.error != 0) Text(stringResource(vm.error), color = MaterialTheme.colorScheme.error)
         Spacer(Modifier.height(6.dp))
-        Text("Your creative workspace", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.home_workspace), style = MaterialTheme.typography.titleMedium)
         if (!vm.premium) {
             AndroidView(
                 factory = { context ->
@@ -204,13 +204,13 @@ fun Generator(vm: AppVM) {
             minLines = 3,
             maxLines = 6
         )
-        Text("Aspect ratio", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.aspect_ratio), style = MaterialTheme.typography.titleSmall)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(RATIOS) { index, item ->
                 FilterChip(selected = ratioIndex == index, onClick = { ratioIndex = index }, label = { Text(item.first) })
             }
         }
-        Text("Style", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.style_label), style = MaterialTheme.typography.titleSmall)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(styleNames.toList()) { index, name ->
                 FilterChip(selected = vm.style == index, onClick = { vm.style = index }, label = { Text(name) })
