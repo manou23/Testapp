@@ -7,7 +7,7 @@
 *Create beyond imagination.*
 
 ![Version](https://img.shields.io/badge/version-1.0.1-7C3AED?style=for-the-badge)
-![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.20-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Build](https://img.shields.io/badge/build-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 
@@ -19,9 +19,9 @@
 
 **Current source version: 1.0.1**
 
-Version 1.0.1 is the first patch update. It fixes a Kotlin compilation issue and retains the newer app/backend implementation after reviewing the supplied project archive.
+Version 1.0.1 adds multi-image generation, local subject cut-out to transparent PNG, standard 2× resizing, EXIF orientation correction, and format-aware saving/sharing. It also includes the earlier Kotlin build fix.
 
-The APK is not published yet. A debug APK is generated as a GitHub Actions artifact after a successful build. A public download link will be added to [Releases](https://github.com/manou23/Testapp/releases) only after the app has been built, configured and tested.
+The new 1.0.1 build is being validated by GitHub Actions. Once the build succeeds, download the APK artifact from the [latest successful build](https://github.com/manou23/Testapp/actions). A signed public Release requires the project's permanent signing keystore; do not install a debug APK as an in-place update over a separately signed production build.
 
 [![Open latest build](https://img.shields.io/badge/Open-GitHub_Actions_Builds-24292F?style=for-the-badge&logo=github)](https://github.com/manou23/Testapp/actions)
 
@@ -35,6 +35,10 @@ The Android app communicates with a separate Cloudflare Worker. Provider credent
 
 - **AI image generation** from a text prompt.
 - **AI image editing** from a selected photo and an instruction.
+- **1–4 generated variations** per request; each completed image uses one server credit. If credits run out mid-batch, completed images remain available.
+- **On-device background removal** with ML Kit, saved as transparent PNG; the source photo is not uploaded and no generation credit is used.
+- **On-device 2× enlargement** using standard bitmap resizing (not AI super-resolution).
+- **EXIF orientation correction** for camera photos and PNG/JPEG-aware save/share.
 - **Aspect ratios** including 1:1, 9:16, 16:9 and 4:3.
 - **Style presets** for different visual directions.
 - **Creations gallery** with favorite, share and delete actions.
@@ -42,7 +46,7 @@ The Android app communicates with a separate Cloudflare Worker. Provider credent
 - **Arabic, English and French** interface translations.
 - **Dark visual design** based on Jetpack Compose.
 
-Some services require a deployed and configured backend. Premium purchases and rewarded-credit verification are not enabled in this release.
+Background removal requires Google Play services and its ML Kit model download. Devices without Google Play services cannot use this tool. AI generation/editing still requires a configured backend and consumes credits. AI super-resolution, object removal, background replacement, Google Play Billing, and production AdMob reward verification are not included yet.
 
 ## 🧩 Project structure
 
