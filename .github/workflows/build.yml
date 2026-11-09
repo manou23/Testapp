@@ -7,6 +7,7 @@ on:
       - "app/**"
       - "*.gradle.kts"
       - "gradle.properties"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
     inputs:
       backend_url:
