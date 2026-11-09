@@ -1,63 +1,66 @@
 # Mesut AI Studio — Test checklist
 
-Use this checklist before publishing a release. A successful Gradle build confirms compilation only; it does not prove that the AI backend, quotas, privacy controls or all device-specific flows work.
+A successful build confirms compilation only. It does not prove deployed AI inference, account quotas, ad rewards, purchases, or device-specific behavior.
 
-## 1. Build and install
+## Automated Worker tests
 
-- [ ] GitHub Actions workflow completes successfully.
-- [ ] Downloaded APK installs on Android 8.0 (API 26) or later.
-- [ ] App launches without crashing.
-- [ ] Package name remains `com.mesut23.aistudio`.
-- [ ] App version shown in About is correct.
+Run locally from backend/ with Node.js 22 using npm test. GitHub Actions runs these tests before the Android job.
 
-## 2. Interface and localization
+Covered cases:
+- Missing or malformed installation identifier.
+- Starting daily balance.
+- FLUX.1 schnell base64 image response decoding.
+- FLUX.2 klein 4B multipart edit request shape.
+- Invalid edit payload rejected without consuming a credit.
+- Daily quota blocks a subsequent inference.
+- Missing rate-limit bindings fail closed.
+- Upstream model errors return HTTP 502.
 
-- [ ] Home, Create, Edit, Creations and Settings tabs open.
-- [ ] Arabic text is readable and laid out correctly.
-- [ ] French and English translations are complete.
-- [ ] Changing language updates the app labels.
-- [ ] Navigation back behavior is correct.
+## Android manual checks
 
-## 3. Image workflows
+- [ ] Install and launch on Android 8.0 (API 26) or later.
+- [ ] Splash, Home, Create, Edit, Creations, Favorites, Styles, Premium and Settings open.
+- [ ] Arabic, French and English labels display correctly.
+- [ ] RTL/LTR layouts are correct.
+- [ ] Empty prompts are rejected.
+- [ ] Generate a real image against a deployed Worker with valid AI binding.
+- [ ] Edit a real image against the configured FLUX.2 klein 4B model.
+- [ ] Verify model cost/usage in Cloudflare before enabling public access.
+- [ ] Remove background locally; verify transparent PNG output.
+- [ ] Confirm 2x resize is standard interpolation, not AI enhancement.
+- [ ] Generate 1–4 images and verify completed outputs remain if a later request is denied.
+- [ ] Save, share, favorite, delete one image and delete all images.
+- [ ] Verify offline, HTTP 429, HTTP 502 and HTTP 503 messages.
+- [ ] Test on a device without Google Play services; local ML Kit subject segmentation may be unavailable.
 
-- [ ] Generate rejects an empty prompt.
-- [ ] Generate returns a valid image when the backend is configured.
-- [ ] Each aspect ratio produces the expected crop.
-- [ ] Image picker opens and accepts a supported photo.
-- [ ] Edit sends the selected image and instruction to the backend.
-- [ ] Network and quota errors are displayed without crashing.
-- [ ] Generated images appear in Creations.
-- [ ] Save to gallery works.
-- [ ] Share opens Android's share sheet.
-- [ ] Favorite and delete actions persist correctly.
-- [ ] Delete all removes the saved creations.
+## Backend deployment checks
 
-## 4. Backend and security
+- [ ] Replace the KV namespace placeholder in backend/wrangler.toml.
+- [ ] Deploy the Worker with AI, LIMITS, DEVICE_RATE_LIMITER and IP_RATE_LIMITER bindings.
+- [ ] Set GitHub Actions variable BACKEND_URL.
+- [ ] Verify requests without a valid device identifier are rejected.
+- [ ] Verify device and IP rate limiting.
+- [ ] Verify daily credits decrement once per successful request.
+- [ ] Confirm no provider credential is present in the APK or repository.
+- [ ] Keep /reward disabled until AdMob SSV signature verification is implemented.
 
-- [ ] Worker is deployed with the AI binding.
-- [ ] KV namespace is bound as `LIMITS`.
-- [ ] GitHub Actions variable `BACKEND_URL` points to the deployed Worker.
-- [ ] Requests without a valid device identifier are rejected.
-- [ ] Daily usage limit is enforced.
-- [ ] Invalid or oversized payloads are rejected.
-- [ ] No provider secret is present in the APK or repository.
-- [ ] `/reward` remains disabled until AdMob SSV signature verification is implemented.
+## Release and store checks
 
-## 5. Release checks
+- [ ] Publish a completed privacy policy at a stable URL.
+- [ ] Review Cloudflare model pricing, quota and data-processing terms.
+- [ ] Configure real AdMob app/ad unit IDs and consent requirements before production ads.
+- [ ] Implement and test AdMob SSV before awarding rewarded credits.
+- [ ] Configure Google Play Billing and server-side purchase verification before Premium is sold.
+- [ ] Back up the permanent signing key securely.
+- [ ] Test upgrade installation using the same signing key.
+- [ ] Complete Play Console data safety, content rating, target API, screenshots and listing requirements.
 
-- [ ] Privacy policy is reviewed and published at a stable URL.
-- [ ] Image processing and retention disclosures match actual backend behavior.
-- [ ] AdMob production IDs replace test IDs only after account approval.
-- [ ] Production signing key is backed up securely.
-- [ ] Release APK is signed with the same key as the previous release.
-- [ ] `applicationId` remains unchanged and `versionCode` is incremented.
-- [ ] Upgrade is tested over the previous installed version.
-- [ ] Release notes and APK checksum are published.
+## Known limitations in 1.0.2
 
-## Known limitations in 1.0.0
-
-- The APK workflow currently creates a **debug** build artifact.
-- Production signing and public Releases upload are not configured.
-- Backend deployment and Cloudflare KV namespace setup are operator tasks.
-- Rewarded credits are deliberately disabled pending server-side verification.
-- Premium billing is not implemented.
+- Worker daily quotas use KV read/modify/write and are not globally atomic.
+- Cloudflare rate-limit bindings are approximate and can exceed configured thresholds briefly.
+- Installation IDs can be reset; no user-account authentication exists.
+- Rewarded ad credit awards and Premium purchases are not enabled.
+- AI super-resolution, object removal/inpainting and background replacement are not implemented.
+- Production signing is not possible until the owner configures a permanent keystore.
+- Real-device and deployed-Worker tests remain required.
