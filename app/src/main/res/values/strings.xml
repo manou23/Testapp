@@ -51,4 +51,8 @@
     <string name="download_segmentation_model">تنزيل نموذج إزالة الخلفية الآن</string>
     <string name="model_ready">تم تجهيز نموذج إزالة الخلفية على هذا الجهاز.</string>
     <string name="model_download_pending">تعذر تنزيل النموذج الآن. تحقق من الإنترنت وخدمات Google Play ثم أعد المحاولة.</string>
+    <string name="home_tagline">أنشئ • تخيّل • حوّل</string>
+    <string name="home_workspace">مساحتك الإبداعية</string>
+    <string name="aspect_ratio">نسبة الأبعاد</string>
+    <string name="style_label">النمط</string>
 </resources>
