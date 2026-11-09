@@ -80,7 +80,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the MVVM and Worker design, and [TEST
 
 ## 🛠️ Build Android APK
 
-GitHub Actions runs Node.js Worker tests first. Only when they pass does it build the Android debug APK.
+GitHub Actions runs Node.js Worker tests first, then Android JUnit unit tests, and only when both pass does it build the Android debug APK.
 
 Local requirements:
 - JDK 17
@@ -152,7 +152,7 @@ cd backend
 npm test
 ```
 
-Automated tests cover input validation, image response decoding, model request shape, quota behavior, rate-limit configuration and upstream failures. Android UI, real Cloudflare inference, AdMob, billing and physical-device behavior still require manual testing.
+Automated tests cover input validation, image response decoding, model request shape, quota behavior, rate-limit configuration, upstream failures, MIME mapping and aspect-ratio sanity. Android UI, real Cloudflare inference, AdMob, billing and physical-device behavior still require manual testing.
 
 ## 📄 License
 
