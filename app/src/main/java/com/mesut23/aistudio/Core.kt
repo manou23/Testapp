@@ -303,7 +303,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun loadJpeg(uri: Uri): ByteArray = withContext(Dispatchers.IO) {
-        val bitmap = loadBitmap(uri, 512)
+        val bitmap = loadBitmap(uri, 500)
         ByteArrayOutputStream().use { output ->
             try {
                 if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)) throw IOException("Cannot encode selected image")
