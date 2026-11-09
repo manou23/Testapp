@@ -20,4 +20,8 @@
     <string name="download_segmentation_model">Télécharger le modèle maintenant</string>
     <string name="model_ready">Le modèle de suppression d’arrière-plan est prêt.</string>
     <string name="model_download_pending">Téléchargement impossible. Vérifiez Internet et Google Play services, puis réessayez.</string>
+    <string name="home_tagline">Créer • Imaginer • Transformer</string>
+    <string name="home_workspace">Votre espace créatif</string>
+    <string name="aspect_ratio">Format de l’image</string>
+    <string name="style_label">Style</string>
 </resources>
