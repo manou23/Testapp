@@ -121,6 +121,15 @@ Release sequence:
 
 For Android to install a new release over the previous installation, keep the same `applicationId`, sign every release with the same private signing key, and increase `versionCode` every time. A debug APK is not a substitute for a properly signed production release.
 
+For the Release workflow, configure these GitHub repository secrets:
+
+- `ANDROID_KEYSTORE_BASE64` — Base64-encoded private `.jks` keystore.
+- `ANDROID_KEYSTORE_PASSWORD` — keystore password.
+- `ANDROID_KEY_ALIAS` — key alias.
+- `ANDROID_KEY_PASSWORD` — key password.
+
+Also configure the repository variable `BACKEND_URL`. Keep the original keystore backed up securely: losing it prevents signing compatible updates. Never paste these secrets into chat or commit them to Git.
+
 ## 🧪 Testing
 
 See [TESTING.md](TESTING.md) for the manual test checklist. See [CHANGELOG.md](CHANGELOG.md) for release history.
