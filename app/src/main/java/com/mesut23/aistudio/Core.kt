@@ -107,7 +107,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     private val creationsDir = File(app.filesDir, "creations").apply { mkdirs() }
 
     var style by mutableIntStateOf(0)
-    var premium by mutableStateOf(preferences.getBoolean("premium", false))
+    var premium by mutableStateOf(false)
         private set
     var favorites by mutableStateOf(preferences.getStringSet("favorites", emptySet())?.toSet() ?: emptySet())
         private set
@@ -362,11 +362,6 @@ class AppVM(app: Application) : AndroidViewModel(app) {
 
     fun toggleFav(file: File) {
         updateFavorites(if (file.name in favorites) favorites - file.name else favorites + file.name)
-    }
-
-    fun savePremium(value: Boolean) {
-        premium = value
-        preferences.edit().putBoolean("premium", value).apply()
     }
 
     fun delete(file: File) {
