@@ -55,4 +55,5 @@
     <string name="home_workspace">مساحتك الإبداعية</string>
     <string name="aspect_ratio">نسبة الأبعاد</string>
     <string name="style_label">النمط</string>
+    <string name="error_rate_limited">طلبات كثيرة جداً. انتظر قليلاً ثم حاول مجدداً.</string>
 </resources>
