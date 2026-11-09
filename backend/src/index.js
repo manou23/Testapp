@@ -135,7 +135,16 @@ function stylePrompt(prompt, style) {
   ];
   const index = Number.isInteger(Number(style)) ? Number(style) : 0;
   const chosen = styles[Math.max(0, Math.min(styles.length - 1, index))];
-  return prompt + ", " + chosen;
+
+  // Keep the user's requested subject and location explicit. This reduces
+  // generic-scene drift (for example, returning houses for a beach prompt).
+  return [
+    "Create one image that faithfully follows the user's requested scene.",
+    "Main subject and setting (must match exactly): " + prompt,
+    "Do not replace the requested subject or setting with a different scene.",
+    "Do not add houses, buildings, or unrelated architecture unless explicitly requested.",
+    chosen
+  ].join(". ");
 }
 
 async function readJson(request) {
@@ -180,7 +189,8 @@ async function generate(env, prompt, style) {
   form.append("prompt", stylePrompt(preparedPrompt, style));
   form.append("width", "1024");
   form.append("height", "1024");
-  form.append("guidance", "4");
+  // FLUX.2 Klein uses guidance to control how closely it follows the prompt.
+  form.append("guidance", "7");
   const serialized = new Response(form);
   const contentType = serialized.headers.get("content-type");
   if (!contentType || !serialized.body) throw new Error("Could not create AI generation payload");
