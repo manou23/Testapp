@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.mesut23.aistudio"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
         val backend = providers.gradleProperty("backendUrl").orElse("https://CHANGE-ME.workers.dev").get()
         buildConfigField("String", "BACKEND_URL", "\"$backend\"")
     }
