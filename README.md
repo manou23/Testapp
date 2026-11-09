@@ -43,7 +43,7 @@ The workflow builds a **debug APK** for testing. It is not a production-signed A
 
 This is an actively developed MVP, not a claim that every commercial editor feature is already available.
 
-- **AI inference is not guaranteed to be free or unlimited.** Cloudflare quotas and prices depend on the account and model. FLUX.2 klein 4B is a priced partner model; review the [Cloudflare Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) before enabling public editing.
+- **Zero-budget setup is possible within Cloudflare's Free allocation, but not unlimited.** Workers AI currently includes 10,000 Neurons per day at no charge on the Free plan. When that allowance is exhausted, further inference fails until the daily reset; it does not silently become unlimited. FLUX.2 klein 4B consumes priced Neurons per input/output tile. Do not upgrade to Workers Paid if you must keep spending at zero. Review the [official pricing and free allocation](https://developers.cloudflare.com/workers-ai/platform/pricing/) before launch.
 - **Rewarded AdMob credits are disabled** until a verified Google AdMob Server-Side Verification (SSV) callback is implemented.
 - **Premium purchase and ad removal are disabled** until Google Play Billing and server-side purchase verification are configured.
 - AI super-resolution, object removal/inpainting and AI background replacement are not implemented.
