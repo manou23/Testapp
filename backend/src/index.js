@@ -42,6 +42,15 @@ async function consume(env, device) {
   return true;
 }
 
+async function refund(env, device) {
+  const current = await usage(env, device);
+  if (current.count > 0) {
+    await env.LIMITS.put(current.key, String(current.count - 1), {
+      expirationTtl: 60 * 60 * 48
+    });
+  }
+}
+
 async function enforceRateLimits(request, env, device) {
   if (!env.DEVICE_RATE_LIMITER || !env.IP_RATE_LIMITER) {
     return { allowed: false, reason: "rate_limit_not_configured" };
@@ -211,18 +220,17 @@ export default {
       const allowed = await consume(env, device);
       if (!allowed) return json({ error: "Daily credit limit reached" }, 429);
 
-      let result;
       try {
-        result = url.pathname === "/generate"
+        const result = url.pathname === "/generate"
           ? await generate(env, prompt, body.style)
           : await edit(env, prompt, body.image);
+        const bytes = await imageBytes(result);
+        return json({ image: toBase64(bytes), mimeType: "image/jpeg" });
       } catch (error) {
+        await refund(env, device);
         console.error("Workers AI inference failed:", error);
         return json({ error: "The AI model could not process this request" }, 502);
       }
-
-      const bytes = await imageBytes(result);
-      return json({ image: toBase64(bytes), mimeType: "image/jpeg" });
     } catch (error) {
       console.error("Mesut AI Worker error:", error);
       return json({ error: "The AI service is temporarily unavailable" }, 500);
