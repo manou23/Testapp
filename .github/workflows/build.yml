@@ -62,7 +62,7 @@ jobs:
 
       - name: Validate deployed backend URL
         env:
-          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
+          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL || 'https://mesut-ai-studio-api.mesut-amari23.workers.dev' }}
         run: |
           set -euo pipefail
           if [ -z "$BACKEND_URL" ] || ! [[ "$BACKEND_URL" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
@@ -72,7 +72,7 @@ jobs:
 
       - name: Build debug APK
         env:
-          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
+          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL || 'https://mesut-ai-studio-api.mesut-amari23.workers.dev' }}
         run: gradle --no-daemon assembleDebug -PbackendUrl="$BACKEND_URL"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -110,7 +110,7 @@ jobs:
       - name: Build signed release APK
         if: steps.release_signing.outputs.available == 'true'
         env:
-          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL }}
+          BACKEND_URL: ${{ github.event.inputs.backend_url || vars.BACKEND_URL || 'https://mesut-ai-studio-api.mesut-amari23.workers.dev' }}
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/mesut-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
