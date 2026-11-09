@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="styles_title">Style library</string>
     <string name="app_name">Mesut AI Studio</string>
     <string name="tab_home">Home</string><string name="tab_generate">Create</string><string name="tab_edit">Edit</string><string name="tab_creations">Creations</string><string name="tab_settings">Settings</string>
     <string name="credits_today">Available credits</string><string name="favorites_title">Favorites</string><string name="premium_title">Premium</string>
