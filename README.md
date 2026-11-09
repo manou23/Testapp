@@ -26,6 +26,8 @@
 3. Download the artifact named **Mesut-AI-Studio-1.0.2-debug**.
 4. Extract the ZIP and install the APK.
 
+The deploy workflow passes the newly deployed Worker URL directly to the Android build, so it does not depend on the workflow being able to edit repository variables. For later manual or push-triggered builds, optionally add a repository Actions variable named `BACKEND_URL` with the same HTTPS Worker URL.
+
 The workflow builds a **debug APK** for testing. It is not a production-signed APK and may not update an APK signed with a different key. A permanent signed release requires the owner's private keystore.
 
 ## 🌟 Features in 1.0.2
