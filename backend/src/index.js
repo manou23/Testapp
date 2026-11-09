@@ -3,14 +3,22 @@ const JSON_HEADERS = {
   "cache-control": "no-store"
 };
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
+const GENERATION_MODEL = "@cf/black-forest-labs/flux-1-schnell";
+const EDIT_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
+const MAX_PROMPT_LENGTH = 2000;
+const MAX_IMAGE_BASE64_LENGTH = 5_600_000;
+const MAX_REQUEST_LENGTH = 6_000_000;
+
+function json(data, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...JSON_HEADERS, ...extraHeaders }
+  });
 }
 
 function deviceKey(request) {
   const id = (request.headers.get("X-Device-Id") || "").trim();
-  if (!/^[a-zA-Z0-9_-]{12,80}$/.test(id)) return null;
-  return id;
+  return /^[a-zA-Z0-9_-]{12,80}$/.test(id) ? id : null;
 }
 
 function dateKey() {
@@ -21,15 +29,41 @@ async function usage(env, device) {
   if (!env.LIMITS) throw new Error("KV binding LIMITS is not configured");
   const key = "usage:" + dateKey() + ":" + device;
   const count = Number(await env.LIMITS.get(key) || "0");
-  return { key, count };
+  return { key, count: Number.isFinite(count) ? count : 0 };
 }
 
 async function consume(env, device) {
   const current = await usage(env, device);
   const limit = Math.max(1, Number(env.DAILY_FREE_LIMIT || 3));
   if (current.count >= limit) return false;
-  await env.LIMITS.put(current.key, String(current.count + 1), { expirationTtl: 60 * 60 * 48 });
+  await env.LIMITS.put(current.key, String(current.count + 1), {
+    expirationTtl: 60 * 60 * 48
+  });
   return true;
+}
+
+async function enforceRateLimits(request, env, device) {
+  if (!env.DEVICE_RATE_LIMITER || !env.IP_RATE_LIMITER) {
+    return { allowed: false, reason: "rate_limit_not_configured" };
+  }
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const [deviceResult, ipResult] = await Promise.all([
+    env.DEVICE_RATE_LIMITER.limit({ key: device }),
+    env.IP_RATE_LIMITER.limit({ key: ip })
+  ]);
+  return {
+    allowed: deviceResult.success && ipResult.success,
+    reason: "rate_limited"
+  };
+}
+
+function decodeBase64(value) {
+  try {
+    const binary = atob(value);
+    return Uint8Array.from(binary, character => character.charCodeAt(0));
+  } catch {
+    return null;
+  }
 }
 
 function toBase64(bytes) {
@@ -42,8 +76,16 @@ function toBase64(bytes) {
 }
 
 async function imageBytes(result) {
+  if (typeof result === "string") {
+    const decoded = decodeBase64(result);
+    if (decoded) return decoded;
+  }
   if (result instanceof Uint8Array) return result;
   if (result instanceof ArrayBuffer) return new Uint8Array(result);
+  if (result && typeof result.image === "string") {
+    const decoded = decodeBase64(result.image);
+    if (decoded) return decoded;
+  }
   if (result && result.image instanceof Uint8Array) return result.image;
   if (result && result.image instanceof ArrayBuffer) return new Uint8Array(result.image);
   throw new Error("AI provider returned an unsupported image response");
@@ -60,13 +102,55 @@ function stylePrompt(prompt, style) {
     "oil painting on canvas",
     "fantasy art, imaginative atmosphere"
   ];
-  const chosen = styles[Math.max(0, Math.min(styles.length - 1, Number(style) || 0))];
+  const index = Number.isInteger(Number(style)) ? Number(style) : 0;
+  const chosen = styles[Math.max(0, Math.min(styles.length - 1, index))];
   return prompt + ", " + chosen;
+}
+
+async function readJson(request) {
+  const raw = await request.text();
+  if (raw.length > MAX_REQUEST_LENGTH) {
+    return { error: json({ error: "Request is too large" }, 413) };
+  }
+  try {
+    return { body: JSON.parse(raw) };
+  } catch {
+    return { error: json({ error: "Invalid JSON" }, 400) };
+  }
+}
+
+async function generate(env, prompt, style) {
+  return env.AI.run(GENERATION_MODEL, {
+    prompt: stylePrompt(prompt, style),
+    num_steps: 4
+  });
+}
+
+async function edit(env, prompt, base64Image) {
+  const image = decodeBase64(base64Image);
+  if (!image || image.length === 0) {
+    throw new TypeError("INVALID_IMAGE");
+  }
+
+  const form = new FormData();
+  form.append("prompt", prompt);
+  form.append("input_image_0", new Blob([image], { type: "image/jpeg" }), "input.jpg");
+  const serialized = new Response(form);
+  const contentType = serialized.headers.get("content-type");
+  if (!contentType || !serialized.body) throw new Error("Could not create AI image payload");
+
+  return env.AI.run(EDIT_MODEL, {
+    multipart: {
+      body: serialized.body,
+      contentType
+    }
+  });
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -83,6 +167,14 @@ export default {
       const device = deviceKey(request);
       if (!device) return json({ error: "A valid X-Device-Id header is required" }, 400);
 
+      const rate = await enforceRateLimits(request, env, device);
+      if (!rate.allowed) {
+        const status = rate.reason === "rate_limit_not_configured" ? 503 : 429;
+        return json({
+          error: status === 503 ? "Service protection is not configured" : "Too many requests. Try again shortly."
+        }, status, status === 429 ? { "retry-after": "60" } : {});
+      }
+
       if (url.pathname === "/credits" && request.method === "GET") {
         const state = await usage(env, device);
         const limit = Math.max(1, Number(env.DAILY_FREE_LIMIT || 3));
@@ -90,8 +182,6 @@ export default {
       }
 
       if (url.pathname === "/reward" && request.method === "POST") {
-        // Never trust the app client to award credits. Add an authenticated AdMob SSV
-        // callback and verify its signature before enabling reward claims.
         return json({ error: "Reward verification is not configured" }, 501);
       }
 
@@ -103,38 +193,36 @@ export default {
         return json({ error: "Cloudflare AI binding is not configured" }, 503);
       }
 
-      const raw = await request.text();
-      if (raw.length > 14_000_000) return json({ error: "Request is too large" }, 413);
-      let body;
-      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON" }, 400); }
-
+      const parsed = await readJson(request);
+      if (parsed.error) return parsed.error;
+      const body = parsed.body;
       const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
-      if (!prompt || prompt.length > 2000) return json({ error: "Prompt must contain 1 to 2000 characters" }, 400);
+      if (!prompt || prompt.length > MAX_PROMPT_LENGTH) {
+        return json({ error: "Prompt must contain 1 to 2000 characters" }, 400);
+      }
+
+      if (url.pathname === "/edit") {
+        if (typeof body.image !== "string" || body.image.length === 0 ||
+            body.image.length > MAX_IMAGE_BASE64_LENGTH || !decodeBase64(body.image)) {
+          return json({ error: "A valid JPEG or PNG image is required" }, 400);
+        }
+      }
 
       const allowed = await consume(env, device);
       if (!allowed) return json({ error: "Daily credit limit reached" }, 429);
 
       let result;
-      if (url.pathname === "/generate") {
-        result = await env.AI.run("@cf/black-forest-labs/flux-1-schnell", {
-          prompt: stylePrompt(prompt, body.style),
-          num_steps: 4
-        });
-      } else {
-        if (typeof body.image !== "string" || body.image.length > 12_000_000) {
-          return json({ error: "A valid image is required" }, 400);
-        }
-        let binary;
-        try { binary = atob(body.image); } catch { return json({ error: "Invalid image encoding" }, 400); }
-        const image = Uint8Array.from(binary, c => c.charCodeAt(0));
-        result = await env.AI.run("@cf/black-forest-labs/flux-1-kontext-dev", {
-          prompt,
-          image
-        });
+      try {
+        result = url.pathname === "/generate"
+          ? await generate(env, prompt, body.style)
+          : await edit(env, prompt, body.image);
+      } catch (error) {
+        console.error("Workers AI inference failed:", error);
+        return json({ error: "The AI model could not process this request" }, 502);
       }
 
       const bytes = await imageBytes(result);
-      return json({ image: toBase64(bytes) });
+      return json({ image: toBase64(bytes), mimeType: "image/jpeg" });
     } catch (error) {
       console.error("Mesut AI Worker error:", error);
       return json({ error: "The AI service is temporarily unavailable" }, 500);
