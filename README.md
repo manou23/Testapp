@@ -113,8 +113,8 @@ The Worker expects the `AI` binding and `LIMITS` KV binding configured in `wrang
 
 Release sequence:
 
-| Release | Version code |
-|---|---:|
+| Release | Version | versionCode |
+|---|---:|---:|
 | First release | 1.0.0 | 1 |
 | First patch | 1.0.1 | 2 |
 | Next patch | 1.0.2 | 3 |
