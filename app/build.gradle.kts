@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mesut23.aistudio"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 35
         versionCode = 2
         versionName = "1.0.1"
@@ -59,5 +59,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("com.google.android.gms:play-services-ads:23.3.0")
+    implementation("com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
