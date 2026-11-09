@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -14,6 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.exifinterface.media.ExifInterface
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
+import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,6 +96,8 @@ class ProxyProvider(baseUrl: String, private val deviceId: String) : AiProvider 
     override suspend fun reward(): Int = request("/reward", JSONObject()).getInt("credits")
 }
 
+fun mimeOf(file: File): String = if (file.extension.equals("png", true)) "image/png" else "image/jpeg"
+
 val RATIOS = listOf("1:1" to 1f, "9:16" to (9f / 16f), "16:9" to (16f / 9f), "4:3" to (4f / 3f))
 
 class AppVM(app: Application) : AndroidViewModel(app) {
@@ -109,6 +117,12 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         private set
     var result by mutableStateOf<File?>(null)
         private set
+    var results by mutableStateOf<List<File>>(emptyList())
+        private set
+    var modelPreparing by mutableStateOf(false)
+        private set
+    var modelMessage by mutableIntStateOf(0)
+        private set
     var error by mutableIntStateOf(0)
         private set
     var files by mutableStateOf(listCreations())
@@ -122,7 +136,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     }
 
     private fun listCreations(): List<File> =
-        creationsDir.listFiles()?.filter { it.isFile && it.extension.equals("jpg", true) }
+        creationsDir.listFiles()?.filter { it.isFile && (it.extension.equals("jpg", true) || it.extension.equals("png", true)) }
             ?.sortedByDescending { it.lastModified() } ?: emptyList()
 
     fun refresh() {
@@ -132,10 +146,12 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun clear() { result = null; error = 0 }
+    fun clear() { result = null; results = emptyList(); error = 0 }
 
-    fun generate(prompt: String, selectedStyle: Int, ratio: Float) {
-        if (!busy && prompt.isNotBlank()) runImageJob(ratio) { provider.generate(prompt, selectedStyle) }
+    fun generate(prompt: String, selectedStyle: Int, ratio: Float, count: Int = 1) {
+        if (!busy && prompt.isNotBlank()) runImageJob(ratio, count = count.coerceIn(1, 4)) {
+            provider.generate(prompt, selectedStyle)
+        }
     }
 
     fun edit(uri: Uri, instruction: String) {
@@ -150,24 +166,34 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun runImageJob(ratio: Float? = null, operation: suspend () -> ByteArray) {
+    private fun runImageJob(
+        ratio: Float? = null,
+        ext: String = "jpg",
+        count: Int = 1,
+        operation: suspend () -> ByteArray
+    ) {
         viewModelScope.launch {
             busy = true
             error = 0
+            results = emptyList()
+            result = null
             try {
-                val bytes = operation()
-                if (bytes.isEmpty()) throw IOException("Empty image")
-                val file = withContext(Dispatchers.IO) {
-                    val output = File(creationsDir, "mesut_" + System.currentTimeMillis() + ".jpg")
-                    output.writeBytes(if (ratio == null) bytes else cropToRatio(bytes, ratio))
-                    output
+                repeat(count.coerceIn(1, 4)) {
+                    val bytes = operation()
+                    if (bytes.isEmpty()) throw IOException("Empty image")
+                    val file = withContext(Dispatchers.IO) {
+                        val output = File(creationsDir, "mesut_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().take(6) + "." + ext)
+                        output.writeBytes(if (ratio == null) bytes else cropToRatio(bytes, ratio))
+                        output
+                    }
+                    result = file
+                    results = results + file
+                    files = listCreations()
                 }
-                result = file
-                files = listCreations()
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: QuotaException) {
-                error = R.string.quota_reached
+                error = if (results.isEmpty()) R.string.quota_reached else R.string.quota_partial
             } catch (_: IOException) {
                 error = R.string.error_network
             } catch (_: Exception) {
@@ -176,6 +202,69 @@ class AppVM(app: Application) : AndroidViewModel(app) {
                 busy = false
                 refresh()
             }
+        }
+    }
+
+    fun removeBackground(uri: Uri) {
+        if (busy) return
+        runImageJob(ext = "png") {
+            withContext(Dispatchers.IO) {
+                val bitmap = loadBitmap(uri, 1536)
+                val segmenter = SubjectSegmentation.getClient(
+                    SubjectSegmenterOptions.Builder().enableForegroundBitmap().build()
+                )
+                try {
+                    val foreground = segmenter.process(InputImage.fromBitmap(bitmap, 0)).await().foregroundBitmap
+                        ?: throw IOException("No foreground subject was detected")
+                    ByteArrayOutputStream().use { output ->
+                        if (!foreground.compress(Bitmap.CompressFormat.PNG, 100, output)) throw IOException("Could not encode PNG")
+                        output.toByteArray()
+                    }
+                } finally {
+                    segmenter.close()
+                    bitmap.recycle()
+                }
+            }
+        }
+    }
+
+    fun enlarge(uri: Uri) {
+        if (busy) return
+        runImageJob {
+            withContext(Dispatchers.IO) {
+                val source = loadBitmap(uri, 1536)
+                val scaled = Bitmap.createScaledBitmap(source, source.width * 2, source.height * 2, true)
+                try {
+                    ByteArrayOutputStream().use { output ->
+                        if (!scaled.compress(Bitmap.CompressFormat.JPEG, 94, output)) throw IOException("Could not encode image")
+                        output.toByteArray()
+                    }
+                } finally {
+                    if (scaled !== source) scaled.recycle()
+                    source.recycle()
+                }
+            }
+        }
+    }
+
+    fun prepareBackgroundModel() {
+        if (modelPreparing) return
+        viewModelScope.launch {
+            modelPreparing = true
+            modelMessage = 0
+            try {
+                withContext(Dispatchers.IO) {
+                    val segmenter = SubjectSegmentation.getClient(
+                        SubjectSegmenterOptions.Builder().enableForegroundBitmap().build()
+                    )
+                    val sample = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888)
+                    try { segmenter.process(InputImage.fromBitmap(sample, 0)).await() }
+                    finally { sample.recycle(); segmenter.close() }
+                }
+                modelMessage = R.string.model_ready
+            } catch (_: Exception) {
+                modelMessage = R.string.model_download_pending
+            } finally { modelPreparing = false }
         }
     }
 
@@ -205,16 +294,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun loadJpeg(uri: Uri): ByteArray = withContext(Dispatchers.IO) {
-        val resolver = context.contentResolver
-        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-            ?: throw IOException("Cannot open selected image")
-        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) throw IOException("Invalid image")
-        var sample = 1
-        while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 1600) sample *= 2
-        val bitmap = resolver.openInputStream(uri)?.use {
-            BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
-        } ?: throw IOException("Cannot decode selected image")
+        val bitmap = loadBitmap(uri, 1600)
         ByteArrayOutputStream().use { output ->
             try {
                 if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)) throw IOException("Cannot encode selected image")
@@ -223,10 +303,41 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private fun loadBitmap(uri: Uri, maxDimension: Int): Bitmap {
+        val resolver = context.contentResolver
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+            ?: throw IOException("Cannot open selected image")
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) throw IOException("Invalid image")
+        var sample = 1
+        while (maxOf(bounds.outWidth, bounds.outHeight) / sample > maxDimension) sample *= 2
+        val decoded = resolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+        } ?: throw IOException("Cannot decode selected image")
+        val orientation = runCatching {
+            resolver.openInputStream(uri)?.use { ExifInterface(it).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL) }
+                ?: ExifInterface.ORIENTATION_NORMAL
+        }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            ExifInterface.ORIENTATION_TRANSPOSE -> { matrix.postScale(-1f, 1f); matrix.postRotate(90f) }
+            ExifInterface.ORIENTATION_TRANSVERSE -> { matrix.postScale(-1f, 1f); matrix.postRotate(270f) }
+        }
+        if (matrix.isIdentity) return decoded
+        return Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true).also {
+            if (it !== decoded) decoded.recycle()
+        }
+    }
+
     fun saveToGallery(file: File): Boolean = runCatching {
         val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "MesutAI_" + file.nameWithoutExtension + ".jpg")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.DISPLAY_NAME, "MesutAI_" + file.name)
+            put(MediaStore.Images.Media.MIME_TYPE, mimeOf(file))
             if (Build.VERSION.SDK_INT >= 29) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Mesut AI Studio")
                 put(MediaStore.Images.Media.IS_PENDING, 1)
@@ -262,6 +373,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         file.delete()
         updateFavorites(favorites - file.name)
         if (result == file) result = null
+        results = results - file
         files = listCreations()
     }
 
@@ -269,6 +381,7 @@ class AppVM(app: Application) : AndroidViewModel(app) {
         files.forEach { it.delete() }
         updateFavorites(emptySet())
         result = null
+        results = emptyList()
         files = listCreations()
     }
 }
