@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mesut AI Studio</string>
+    <string name="tab_home">الرئيسية</string>
+    <string name="tab_generate">إنشاء</string>
+    <string name="tab_edit">تعديل</string>
+    <string name="tab_creations">إبداعاتي</string>
+    <string name="tab_settings">الإعدادات</string>
+    <string name="credits_today">الرصيد المتاح</string>
+    <string name="favorites_title">المفضلة</string>
+    <string name="premium_title">النسخة المميزة</string>
+    <string name="error_network">تعذر الاتصال بالخادم. تحقق من الإنترنت وإعداد الخادم.</string>
+    <string name="prompt_hint">اكتب وصف الصورة التي تريد إنشاءها</string>
+    <string name="generate">إنشاء الصورة</string>
+    <string name="pick_photo">اختر صورة من جهازك</string>
+    <string name="edit_hint">ما التعديلات التي تريدها؟</string>
+    <string name="apply">تطبيق التعديلات</string>
+    <string name="consent_title">تأكيد معالجة الصورة</string>
+    <string name="consent_body">سيتم إرسال الصورة والتعليمات إلى خادم الذكاء الاصطناعي لمعالجتها.</string>
+    <string name="continue_">متابعة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="quota_reached">لقد استهلكت رصيدك الحالي.</string>
+    <string name="error_generic">حدث خطأ غير متوقع.</string>
+    <string name="saved">تم حفظ الصورة في المعرض.</string>
+    <string name="save">حفظ</string>
+    <string name="share">مشاركة</string>
+    <string name="favorites_empty">لا توجد صور هنا بعد.</string>
+    <string name="premium_b1">تجربة إبداعية أكثر مرونة</string>
+    <string name="premium_b2">مساحة منظمة لأعمالك</string>
+    <string name="premium_b3">مزايا إضافية عند توفرها</string>
+    <string name="premium_cta">قريباً</string>
+    <string name="premium_note">الشراء والاشتراكات غير مفعّلة في هذا الإصدار.</string>
+    <string name="premium_debug">وضع الاختبار للمطور</string>
+    <string name="about_title">حول التطبيق</string>
+    <string name="about_desc">استوديو إبداعي لإنشاء الصور وتعديلها بمساعدة الذكاء الاصطناعي.</string>
+    <string name="about_text">الإصدار %1$s</string>
+    <string name="language">اللغة</string>
+    <string name="delete_all">حذف جميع الصور المحفوظة</string>
+    <string name="reward_max">لا يمكن إضافة رصيد مكافأة حالياً.</string>
+    <string-array name="style_names">
+        <item>واقعي</item><item>سينمائي</item><item>أنمي</item><item>ثلاثي الأبعاد</item>
+        <item>فن رقمي</item><item>ألوان مائية</item><item>رسم زيتي</item><item>خيالي</item>
+    </string-array>
+</resources>
