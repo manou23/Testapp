@@ -95,18 +95,36 @@ Output: `app/build/outputs/apk/debug/`.
 
 ## ☁️ Deploy Cloudflare Worker
 
-The backend uses the Workers AI binding, a KV namespace, and two Rate Limiting bindings.
+The backend uses the Workers AI binding, a KV namespace, and two approximate Rate Limiting bindings. Deployment is automated by **Deploy Cloudflare Worker** in GitHub Actions.
 
-1. Create a Cloudflare KV namespace.
-2. Replace `REPLACE_WITH_KV_NAMESPACE_ID` in `backend/wrangler.toml`.
-3. Install/use Wrangler 4.36.0 or later.
-4. From `backend/`, deploy the Worker.
-5. Set the GitHub repository variable `BACKEND_URL` to the deployed Worker URL.
+### One-time Cloudflare setup
 
-```bash
-cd backend
-npx wrangler@latest deploy
-```
+1. In Cloudflare Dashboard → Workers & Pages → KV, create a namespace named `MESUT_AI_LIMITS` and copy its 32-character namespace ID.
+2. Create a Cloudflare API token restricted to this account with **Workers Scripts: Edit**, **Workers KV Storage: Edit**, **Account Settings: Read**, and **AI: Read** permissions. Never paste this token into source code or chat.
+3. In GitHub → Settings → Secrets and variables → Actions → Secrets, add:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_KV_NAMESPACE_ID`
+4. Open Actions → **Deploy Cloudflare Worker** → Run workflow.
+5. The workflow deploys the Worker, saves the detected HTTPS URL as the repository variable `BACKEND_URL`, then triggers a new Android build using that URL.
+
+The workflow substitutes the KV ID only in its temporary runner checkout; it never commits the account-specific namespace ID to the public repository. Do not add the KV ID or API token to Android code.
+
+If the deployment cannot detect a `workers.dev` URL, enable the workers.dev subdomain for the account and run the workflow again.
+
+Required bindings:
+- `AI`: Cloudflare Workers AI.
+- `LIMITS`: KV namespace for daily counters.
+- `DEVICE_RATE_LIMITER`: 12 requests per 60 seconds per installation ID.
+- `IP_RATE_LIMITER`: 60 requests per 60 seconds per source IP.
+
+The Worker exposes:
+- `GET /credits`
+- `POST /generate`
+- `POST /edit`
+- `POST /reward` (intentionally disabled with HTTP 501 until SSV verification exists)
+
+The Android build now fails early if `BACKEND_URL` is missing, instead of packaging an APK that cannot reach the AI service.
 
 Required bindings:
 - `AI`: Cloudflare Workers AI.
