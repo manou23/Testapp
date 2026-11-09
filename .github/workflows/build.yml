@@ -52,6 +52,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.13"
+      - name: Validate deployed backend URL
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$BACKEND_URL" ] || ! [[ "$BACKEND_URL" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            echo "::error::Deploy the Cloudflare Worker first. BACKEND_URL must be a valid HTTPS workers.dev URL."
+            exit 1
+          fi
+
       - name: Build debug APK
         run: gradle --no-daemon clean testDebugUnitTest assembleDebug -PbackendUrl="${{ vars.BACKEND_URL }}"
       - name: Upload APK artifact
