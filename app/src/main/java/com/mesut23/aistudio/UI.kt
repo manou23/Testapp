@@ -178,6 +178,7 @@ private fun HomeAction(label: String, symbol: String, modifier: Modifier = Modif
 fun Generator(vm: AppVM) {
     var prompt by remember { mutableStateOf("") }
     var ratioIndex by remember { mutableIntStateOf(0) }
+    var count by remember { mutableIntStateOf(1) }
     val styleNames = stringArrayResource(R.array.style_names)
     LaunchedEffect(Unit) { vm.clear() }
     Column(
@@ -205,8 +206,14 @@ fun Generator(vm: AppVM) {
                 FilterChip(selected = vm.style == index, onClick = { vm.style = index }, label = { Text(name) })
             }
         }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.variations), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+            (1..4).forEach { number ->
+                FilterChip(selected = count == number, onClick = { count = number }, label = { Text(number.toString()) })
+            }
+        }
         Button(
-            onClick = { vm.generate(prompt, vm.style, RATIOS[ratioIndex].second) },
+            onClick = { vm.generate(prompt, vm.style, RATIOS[ratioIndex].second, count) },
             enabled = prompt.isNotBlank() && !vm.busy,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -238,6 +245,15 @@ fun Editor(vm: AppVM) {
         ) { Text(stringResource(R.string.pick_photo)) }
         selectedUri?.let { uri ->
             AsyncImage(uri, null, Modifier.fillMaxWidth().heightIn(max = 280.dp).clip(RoundedCornerShape(16.dp)), contentScale = ContentScale.Fit)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = { vm.removeBackground(uri) }, enabled = !vm.busy, modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.tool_remove_bg))
+                }
+                OutlinedButton(onClick = { vm.enlarge(uri) }, enabled = !vm.busy, modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.tool_upscale))
+                }
+            }
+            Text(stringResource(R.string.local_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         OutlinedTextField(
             value = instruction,
@@ -276,7 +292,8 @@ fun Editor(vm: AppVM) {
 private fun ColumnScope.ResultPanel(vm: AppVM) {
     if (vm.busy) CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
     if (vm.error != 0) Text(stringResource(vm.error), color = MaterialTheme.colorScheme.error)
-    vm.result?.let { file ->
+    val outputFiles = vm.results.ifEmpty { listOfNotNull(vm.result) }
+    outputFiles.forEach { file ->
         AsyncImage(file, null, Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)), contentScale = ContentScale.Fit)
         ImageActions(vm, file)
     }
@@ -308,7 +325,7 @@ private fun ImageActions(vm: AppVM, file: File) {
 private fun shareImage(context: Context, file: File) {
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "image/jpeg"
+        type = mimeOf(file)
         putExtra(Intent.EXTRA_STREAM, uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
@@ -486,6 +503,12 @@ fun SettingsScreen(vm: AppVM, navigate: (String) -> Unit) {
             ) { Text(label) }
         }
         HorizontalDivider()
+        Text(stringResource(R.string.local_tools_title), style = MaterialTheme.typography.titleMedium)
+        OutlinedButton(onClick = { vm.prepareBackgroundModel() }, enabled = !vm.modelPreparing, modifier = Modifier.fillMaxWidth()) {
+            if (vm.modelPreparing) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+            else Text(stringResource(R.string.download_segmentation_model))
+        }
+        if (vm.modelMessage != 0) Text(stringResource(vm.modelMessage), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         OutlinedButton(onClick = { vm.deleteAll() }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.delete_all))
         }
