@@ -19,6 +19,8 @@
 
 **Source version: 1.0.2**
 
+> **Backend deployment is still required before AI generation/editing will work.** The latest CI build now checks for a real HTTPS `BACKEND_URL` and stops instead of producing an APK that silently cannot connect. Run the Cloudflare deployment workflow described below, then download the new APK build it triggers.
+
 1. Open [GitHub Actions](https://github.com/manou23/Testapp/actions).
 2. Open the latest successful **Build Android APK** workflow run.
 3. Download the artifact named **Mesut-AI-Studio-1.0.2-debug**.
