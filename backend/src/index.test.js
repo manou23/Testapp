@@ -59,6 +59,46 @@ test("generation decodes Cloudflare's base64 image response", async () => {
   assert.equal(calledModel, "@cf/black-forest-labs/flux-1-schnell");
 });
 
+test("Arabic generation prompts are translated to English before FLUX", async () => {
+  const calls = [];
+  const env = makeEnv({
+    aiRun: async (model, input) => {
+      calls.push({ model, input });
+      if (model === "@cf/meta/m2m100-1.2b") {
+        assert.equal(input.source_lang, "ar");
+        assert.equal(input.target_lang, "en");
+        return { translated_text: "A beach with blue waves" };
+      }
+      return { image: "iVBORw0KGgo=" };
+    }
+  });
+  const response = await worker.fetch(request("/generate", {
+    prompt: "شاطئ البحر مع أمواج زرقاء",
+    style: 0
+  }), env);
+  assert.equal(response.status, 200);
+  assert.equal(calls[0].model, "@cf/meta/m2m100-1.2b");
+  assert.equal(calls[1].model, "@cf/black-forest-labs/flux-1-schnell");
+  assert.match(calls[1].input.prompt, /A beach with blue waves/);
+  assert.doesNotMatch(calls[1].input.prompt, /houses|buildings/i);
+});
+
+test("generation falls back to the original Arabic prompt if translation fails", async () => {
+  let generationPrompt = "";
+  const env = makeEnv({
+    aiRun: async (model, input) => {
+      if (model === "@cf/meta/m2m100-1.2b") throw new Error("translation unavailable");
+      generationPrompt = input.prompt;
+      return { image: "iVBORw0KGgo=" };
+    }
+  });
+  const response = await worker.fetch(request("/generate", {
+    prompt: "صورة ملعب كرة قدم"
+  }), env);
+  assert.equal(response.status, 200);
+  assert.match(generationPrompt, /صورة ملعب كرة قدم/);
+});
+
 test("edit uses the supported FLUX.2 klein multipart input contract", async () => {
   let calledModel = "";
   let multipart = false;
