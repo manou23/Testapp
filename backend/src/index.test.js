@@ -93,7 +93,7 @@ test("generation falls back to the original Arabic prompt if translation fails",
   const env = makeEnv({
     aiRun: async (model, input) => {
       if (model === "@cf/meta/m2m100-1.2b") throw new Error("translation unavailable");
-      generationPrompt = input.prompt;
+      generationPrompt = await new Response(input.multipart.body).text();
       return { image: "iVBORw0KGgo=" };
     }
   });
