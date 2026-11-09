@@ -9,8 +9,9 @@ Run locally from backend/ with Node.js 22 using npm test. GitHub Actions runs th
 Covered cases:
 - Missing or malformed installation identifier.
 - Starting daily balance.
-- FLUX.1 schnell base64 image response decoding.
+- FLUX.2 klein 4B multipart base64 image response decoding.
 - FLUX.2 klein 4B multipart edit request shape.
+- Arabic prompt translation to English and safe fallback if translation is unavailable.
 - Invalid edit payload rejected without consuming a credit.
 - Daily quota blocks a subsequent inference.
 - Missing rate-limit bindings fail closed.
