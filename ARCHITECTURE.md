@@ -20,7 +20,7 @@ Android 8.0+ creative image studio built with Kotlin and Jetpack Compose. Arabic
 - Rewarded AdMob credit awards: disabled until Google SSV signature verification is deployed.
 - Premium purchases and ad removal: disabled until Play Billing products and server-side purchase verification are configured.
 - AI super-resolution, object removal/inpainting, and background replacement.
-- Unlimited or guaranteed zero-cost AI inference. Cloudflare quotas, eligible free allowances and model pricing can change; FLUX.2 klein 4B is a priced partner model.
+- Unlimited AI inference. Cloudflare Workers AI currently includes 10,000 Neurons per day on the Free plan; when exhausted, further inference stops until reset. FLUX.2 klein 4B consumes Neurons per input/output tile. Keeping the account on the Free plan avoids paid overage but imposes the shared daily cap.
 
 ## Architecture
 
