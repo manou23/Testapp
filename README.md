@@ -141,7 +141,7 @@ The Android project uses Google's test AdMob application/banner identifiers duri
 
 Premium is currently an informational, disabled screen. Do not advertise or sell Premium until Play Billing and server-side purchase verification are working.
 
-Review and complete [PRIVACY_POLICY_TEMPLATE.md](PRIVACY_POLICY_TEMPLATE.md) before publication. The policy must accurately describe the deployed Worker, Cloudflare model processing, retention, ads, and user contact details.
+Review and complete [PRIVACY_POLICY_DRAFT_AR.md](PRIVACY_POLICY_DRAFT_AR.md) and [PRIVACY_POLICY_TEMPLATE.md](PRIVACY_POLICY_TEMPLATE.md) before publication. The draft contains owner/contact placeholders and must not be published unchanged. The policy must accurately describe the deployed Worker, Cloudflare model processing, retention, ads, and user contact details.
 
 ## 🧪 Tests
 
