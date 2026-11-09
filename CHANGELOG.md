@@ -20,6 +20,8 @@
 - تحديث GitHub Actions لتشغيل اختبارات Worker قبل بناء APK.
 
 ### Android وتجربة الاستخدام
+- إضافة سير عمل نشر Cloudflare Worker يربط عنوان الخادم تلقائياً بإصدارات Android.
+- إيقاف بناء APK إذا لم يكن عنوان الخادم HTTPS مضبوطاً، لمنع إنتاج تطبيق غير متصل بخدمة AI.
 - ترقية Android Gradle Plugin وKotlin وGradle إلى إصدارات متوافقة مع API 36.
 - رفع compileSdk وtargetSdk إلى Android 16 (API 36) لتلبية شرط Google Play اعتباراً من 31 أغسطس 2026، مع الحفاظ على minSdk 26.
 - رفع الحد الأدنى إلى Android 8.0 (API 26) وفق متطلبات المنتج.
