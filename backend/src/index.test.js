@@ -107,6 +107,14 @@ test("rate limiting is fail-closed when bindings are missing", async () => {
   assert.equal(response.status, 503);
 });
 
+test("rate limiting rejects requests when a binding denies them", async () => {
+  const env = makeEnv();
+  env.DEVICE_RATE_LIMITER = { limit: async () => ({ success: false }) };
+  const response = await worker.fetch(request("/credits"), env);
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("retry-after"), "60");
+});
+
 test("upstream model failures return 502 and refund the reserved credit", async () => {
   const env = makeEnv({ limit: 2, aiRun: async () => { throw new Error("upstream failure"); } });
   const response = await worker.fetch(request("/generate", { prompt: "test" }), env);
