@@ -107,8 +107,10 @@ test("rate limiting is fail-closed when bindings are missing", async () => {
   assert.equal(response.status, 503);
 });
 
-test("upstream model failures return a controlled 502 response", async () => {
-  const env = makeEnv({ aiRun: async () => { throw new Error("upstream failure"); } });
+test("upstream model failures return 502 and refund the reserved credit", async () => {
+  const env = makeEnv({ limit: 2, aiRun: async () => { throw new Error("upstream failure"); } });
   const response = await worker.fetch(request("/generate", { prompt: "test" }), env);
   assert.equal(response.status, 502);
+  const credits = await worker.fetch(request("/credits"), env);
+  assert.deepEqual(await credits.json(), { credits: 2, limit: 2 });
 });
