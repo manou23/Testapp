@@ -1,83 +1,104 @@
 # ✨ Mesut AI Studio
 
 <p align="center">
-  <strong>صمّم، ابتكر، وحوّل أفكارك إلى صور بالذكاء الاصطناعي</strong><br/>
+  <strong>استوديو الذكاء الاصطناعي — أنشئ، ابتكر، وأطلق خيالك.</strong><br/>
   <em>Create beyond imagination.</em>
 </p>
 
 <p align="center">
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-7c3aed?style=for-the-badge"/>
-  <img alt="Platform" src="https://img.shields.io/badge/platform-Android-16a34a?style=for-the-badge&logo=android&logoColor=white"/>
-  <img alt="Languages" src="https://img.shields.io/badge/languages-AR%20%7C%20FR%20%7C%20EN-2563eb?style=for-the-badge"/>
-  <img alt="License" src="https://img.shields.io/badge/license-to%20be%20defined-gray?style=for-the-badge"/>
+  <img alt="Android" src="https://img.shields.io/badge/Android-Kotlin-3DDC84?style=for-the-badge&logo=android&logoColor=white"/>
+  <img alt="Status" src="https://img.shields.io/badge/status-preparing-ffb020?style=for-the-badge"/>
 </p>
 
 ---
 
-## 🚀 التحميل
+## 📲 تحميل التطبيق
 
 <div align="center">
 
-### Mesut AI Studio — Android
+### Mesut AI Studio · v1.0.0
 
-**الإصدار الحالي: 1.0.0**
+**سيظهر رابط APK هنا فور نجاح البناء ونشر الإصدار.**
 
-[![Download APK](https://img.shields.io/badge/Download-APK-7c3aed?style=for-the-badge&logo=android&logoColor=white)](../../releases/latest)
-
-> سيظهر رابط APK هنا فور نشر أول إصدار مستقر في صفحة Releases. لا تستخدم ملفات تجريبية على أنها إصدار نهائي.
+[![Download APK](https://img.shields.io/badge/Download-APK-6D28D9?style=for-the-badge&logo=android&logoColor=white)](../../releases/latest)
 
 </div>
 
-## 🌟 عن التطبيق
+> رابط التحميل أعلاه يفتح صفحة أحدث إصدار في GitHub Releases. لن يكون هناك ملف APK قابل للتنزيل حتى يتم بناء التطبيق ونشره فعلياً.
 
-Mesut AI Studio هو استوديو إبداعي للهواتف يهدف إلى جمع أدوات إنشاء الصور وتعديلها بالذكاء الاصطناعي في تجربة واحدة سهلة وعصرية، مع دعم العربية والفرنسية والإنجليزية.
+## 🚀 نبذة عن المشروع
 
-## 🧩 المزايا المخطط لإصدار 1.0.0
+Mesut AI Studio تطبيق Android لإنشاء الصور وتحريرها بالذكاء الاصطناعي، بواجهة حديثة ودعم للغة العربية واللغات الإضافية. يتكون المشروع من تطبيق الهاتف وخدمة خلفية مستقلة.
 
-- إنشاء الصور بالذكاء الاصطناعي.
-- تعديل الصور وتطوير الأفكار الإبداعية.
-- مكتبة للتصاميم والمفضلة.
-- مشاركة النتائج وحفظها.
-- واجهة متعددة اللغات.
-- نظام أرصدة وتجربة استخدام واضحة.
+## ✨ الوظائف الموجودة في المشروع المصدر
 
-> يتم تفعيل كل ميزة ونشرها بعد التحقق من عملها فعلياً. توفر الميزة يعتمد أيضاً على إعداد خدمات الخادم ومفاتيح مزودي الذكاء الاصطناعي.
+- إنشاء الصور انطلاقاً من وصف نصي.
+- تعديل الصور باستخدام الذكاء الاصطناعي.
+- معرض للأعمال المنشأة.
+- إدارة رصيد الاستخدام والمكافآت.
+- واجهة Android مبنية بـ Kotlin وJetpack Compose.
+- خدمة خلفية Cloudflare Worker للاتصال بنماذج الذكاء الاصطناعي.
 
-## 📦 سجل الإصدارات
+## 🧱 البنية التقنية
 
-| الإصدار | الحالة | التفاصيل |
-|---|---|---|
-| 1.0.0 | قيد الإعداد | الإصدار الأساسي الأول |
+| المكوّن | التقنية |
+|---|---|
+| Android | Kotlin |
+| UI | Jetpack Compose |
+| Build | Gradle |
+| Backend | Cloudflare Workers |
+| AI | Cloudflare Workers AI |
 
-### سياسة التحديثات
+## 🗂️ بنية المستودع
 
-- نعتمد ترقيمًا متسلسلاً: `1.0.0` ثم `1.0.1` ثم `1.0.2`…
-- كل تحديث يُنشر كإصدار جديد مع سجل تغييرات واضح.
-- يستخدم التطبيق نفس **معرّف الحزمة** ومفتاح التوقيع لضمان إمكانية التحديث فوق النسخة السابقة دون إزالة التطبيق.
-- لا يُنشر APK كتحديث قابل للتثبيت قبل التحقق من توافق التوقيع ورقم الإصدار.
+- `app/` — تطبيق Android.
+- `backend/` — الخدمة الخلفية.
+- `.github/workflows/` — سير عمل البناء الآلي.
+- `VERSION` — رقم الإصدار الحالي.
+- `CHANGELOG.md` — سجل التغييرات.
 
-## 🛠️ البنية التقنية
+## 🔢 نظام الإصدارات والتحديث
 
-- Android / Kotlin
-- Jetpack Compose
-- Cloudflare Workers (backend)
-- GitHub Actions للبناء الآلي
+نعتمد ترقيم الإصدارات بالشكل التالي:
 
-## 🔐 الأمان والخصوصية
+1. النسخة الأولى: **1.0.0**.
+2. التحديث التصحيحي الأول: **1.0.1**.
+3. التحديث التالي: **1.0.2**، ثم نستمر بنفس النمط.
 
-لا تضع مفاتيح API أو أسرار التوقيع داخل المستودع. تُدار الأسرار من إعدادات GitHub Actions أو بيئة الخادم. راجع [قالب سياسة الخصوصية](PRIVACY_POLICY_TEMPLATE.md) قبل الإطلاق العام.
+حتى يتم تثبيت التحديث فوق النسخة السابقة دون إزالة التطبيق، يجب الحفاظ على:
+- نفس `applicationId`.
+- نفس مفتاح توقيع Android لكل إصدارات Release.
+- زيادة `versionCode` في كل إصدار جديد.
 
-## 🧪 البناء والاختبار
+لا يمكن ضمان التحديث فوق النسخة المثبتة إذا تغيّر مفتاح التوقيع أو معرّف التطبيق.
 
-راجع [دليل الاختبار](TESTING.md). لا يعتبر البناء ناجحاً لمجرد انتهاء workflow؛ يجب تثبيت APK واختبار الوظائف الأساسية قبل نشره.
+## 🛠️ إعداد البناء
 
-## 📬 الدعم والملاحظات
+يستخدم سير عمل GitHub Actions متغير المستودع التالي:
 
-استخدم قسم [Issues](../../issues) للإبلاغ عن الأخطاء أو اقتراح التحسينات.
+- `BACKEND_URL` — عنوان Cloudflare Worker المنشور.
+
+إعداد الخدمة الخلفية يتطلب Cloudflare Worker وموارد الربط المحددة في `backend/wrangler.toml`. لا تضع مفاتيح API أو كلمات المرور أو ملفات التوقيع في المستودع.
+
+## 🔐 الأمان قبل النشر
+
+- يجب التحقق من مكافآت الإعلانات من جهة الخادم، وليس الوثوق بطلب التطبيق وحده.
+- يجب تهيئة حدود الاستخدام والتحقق من مدخلات API.
+- يجب إعداد توقيع Release بأسرار GitHub Actions.
+- يجب مراجعة سياسة الخصوصية وتراخيص نماذج الذكاء الاصطناعي قبل النشر التجاري.
+
+## 📋 سجل التغييرات
+
+راجع [CHANGELOG.md](CHANGELOG.md).
+
+## 📄 الترخيص
+
+لم تتم إضافة ترخيص مفتوح المصدر بعد؛ جميع الحقوق محفوظة إلى حين تحديد الترخيص.
 
 ---
 
 <p align="center">
   <strong>Mesut AI Studio</strong><br/>
-  Made with creativity · Version 1.0.0
+  Made with passion · Powered by AI
 </p>
