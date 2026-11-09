@@ -21,7 +21,7 @@
 
 Version 1.0.1 adds multi-image generation, local subject cut-out to transparent PNG, standard 2× resizing, EXIF orientation correction, and format-aware saving/sharing. It also includes the earlier Kotlin build fix.
 
-The new 1.0.1 build is being validated by GitHub Actions. Once the build succeeds, download the APK artifact from the [latest successful build](https://github.com/manou23/Testapp/actions). A signed public Release requires the project's permanent signing keystore; do not install a debug APK as an in-place update over a separately signed production build.
+The new 1.0.1 build is being validated by GitHub Actions. The 1.0.1 APK artifact has been generated successfully. Open the [1.0.1 build run](https://github.com/manou23/Testapp/actions/runs/42546246666), scroll to **Artifacts**, and download **Mesut-AI-Studio-1.0.1-debug** (ZIP containing the APK). A signed public Release requires the project's permanent signing keystore; do not install a debug APK as an in-place update over a separately signed production build.
 
 [![Open latest build](https://img.shields.io/badge/Open-GitHub_Actions_Builds-24292F?style=for-the-badge&logo=github)](https://github.com/manou23/Testapp/actions)
 
@@ -76,7 +76,7 @@ The repository uses GitHub Actions:
 1. Open the [Actions page](https://github.com/manou23/Testapp/actions).
 2. Select **Build Android APK**.
 3. Open the latest successful run.
-4. Download the artifact named **Mesut-AI-Studio-1.0.1-debug**.
+4. Open the [verified 1.0.1 build](https://github.com/manou23/Testapp/actions/runs/42546246666) and download **Mesut-AI-Studio-1.0.1-debug** from Artifacts.
 
 For local builds, use JDK 17 and Gradle 8.9:
 
