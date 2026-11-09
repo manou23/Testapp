@@ -60,6 +60,9 @@ test("generation uses FLUX.2 Klein multipart and decodes its base64 image respon
   assert.equal(atob(result.image), atob("iVBORw0KGgo="));
   assert.equal(calledModel, "@cf/black-forest-labs/flux-2-klein-4b");
   assert.match(multipartBody, /A blue bird/);
+  assert.match(multipartBody, /Do not replace the requested subject or setting/);
+  assert.match(multipartBody, /Do not add houses, buildings/);
+  assert.match(multipartBody, /name="guidance"\r?\n\r?\n7/);
   assert.match(multipartBody, /1024/);
 });
 
@@ -84,8 +87,8 @@ test("Arabic generation prompts are translated to English before FLUX", async ()
   assert.equal(calls[0].model, "@cf/meta/m2m100-1.2b");
   assert.equal(calls[1].model, "@cf/black-forest-labs/flux-2-klein-4b");
   const generatedForm = await new Response(calls[1].input.multipart.body).text();
-  assert.match(generatedForm, /A beach with blue waves/);
-  assert.doesNotMatch(generatedForm, /houses|buildings/i);
+  assert.match(generatedForm, /Main subject and setting \(must match exactly\): A beach with blue waves/);
+  assert.match(generatedForm, /Do not add houses, buildings, or unrelated architecture unless explicitly requested/);
 });
 
 test("generation falls back to the original Arabic prompt if translation fails", async () => {
