@@ -59,6 +59,6 @@ The Worker owns the AI binding and never sends provider credentials to the Andro
 
 ## Test status
 
-The Worker has Node.js unit tests for request validation, base64 image decoding, model routing, quota enforcement, missing rate-limit bindings, and upstream failures. GitHub Actions is the authoritative CI result.
+The Worker has Node.js unit tests for request validation, base64 image decoding, model routing, quota enforcement, missing rate-limit bindings, and upstream failures. Android has JUnit tests for MIME mapping and aspect-ratio sanity. GitHub Actions is the authoritative CI result.
 
 A successful APK build verifies compilation, not actual model availability, Cloudflare account billing, a deployed Worker, AdMob SSV, Play Billing, Play Store policy compliance, or behavior on a physical device.
