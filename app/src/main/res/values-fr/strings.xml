@@ -11,4 +11,13 @@
     <string name="premium_b1">Une expérience créative plus flexible</string><string name="premium_b2">Un espace organisé pour vos créations</string><string name="premium_b3">Fonctions supplémentaires à venir</string><string name="premium_cta">Bientôt disponible</string><string name="premium_note">Les achats et abonnements ne sont pas activés dans cette version.</string><string name="premium_debug">Mode test développeur</string>
     <string name="about_title">À propos</string><string name="about_desc">Un studio créatif pour générer et modifier des images avec l’IA.</string><string name="about_text">Version %1$s</string><string name="language">Langue</string><string name="delete_all">Supprimer toutes les images</string><string name="reward_max">Les crédits bonus sont indisponibles.</string>
     <string-array name="style_names"><item>Réaliste</item><item>Cinématique</item><item>Anime</item><item>3D</item><item>Art numérique</item><item>Aquarelle</item><item>Peinture à l’huile</item><item>Fantaisie</item></string-array>
+    <string name="variations">Nombre d’images (un crédit chacune)</string>
+    <string name="quota_partial">Crédits épuisés pendant la génération. Les images terminées ont été conservées.</string>
+    <string name="tool_remove_bg">Supprimer l’arrière-plan</string>
+    <string name="tool_upscale">Agrandir ×2</string>
+    <string name="local_note">Ces outils fonctionnent sur l’appareil : aucun envoi et aucun crédit utilisé. ×2 est un redimensionnement classique, pas une amélioration IA. La suppression de l’arrière-plan nécessite Google Play services et le téléchargement du modèle.</string>
+    <string name="local_tools_title">Outils sur l’appareil</string>
+    <string name="download_segmentation_model">Télécharger le modèle maintenant</string>
+    <string name="model_ready">Le modèle de suppression d’arrière-plan est prêt.</string>
+    <string name="model_download_pending">Téléchargement impossible. Vérifiez Internet et Google Play services, puis réessayez.</string>
 </resources>
